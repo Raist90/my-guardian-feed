@@ -1,10 +1,10 @@
-import React from "react";
-import { Counter } from "./Counter.js";
+import React from 'react'
+import { Counter } from './Counter.js'
 
 export default function Page() {
   return (
     <>
-      <h1 className="font-bold text-3xl pb-4">My Vike app</h1>
+      <h1 className='pb-4 text-3xl font-bold'>My Vike app</h1>
       This page is:
       <ul>
         <li>Rendered to HTML.</li>
@@ -13,5 +13,5 @@ export default function Page() {
         </li>
       </ul>
     </>
-  );
+  )
 }
