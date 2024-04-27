@@ -1,18 +1,8 @@
 import type { GuardianAPIData } from '@/types'
+import fetch from 'cross-fetch'
 
 /**
- * Regular expression to identify HTML tags in the input string. Replacing the
- * identified HTML tag with a null string
- */
-export function removeHTMLTags(str: string | null) {
-  if (str === null || str === '') return false
-  else str = str.toString()
-
-  return str.replace(/(<([^>]+)>)/gi, '')
-}
-
-/**
- * You can use this both clientside and serverside
+ * Use this only serverside in order to not expose your api key
  *
  * @todo Make sure to complete this one
  */

@@ -1,4 +1,4 @@
-import { removeHTMLTags } from '@/helpers'
+import { removeHTMLTags } from '@/helpers/removeHTMLTags'
 import type { GuardianAPIData } from '@/types'
 import React from 'react'
 import { useData } from 'vike-react/useData'
