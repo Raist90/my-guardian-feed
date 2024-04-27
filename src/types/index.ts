@@ -1,3 +1,13 @@
+type Tag = {
+  apiUrl: string
+  id: `${string}/${string}`
+  sectionId: string
+  sectionName: string
+  type: string
+  webTitle: string
+  webUrl: string
+}
+
 type News = {
   id: string
   /** @todo Double-check this */
@@ -16,8 +26,10 @@ type News = {
   /** @todo Double-check this */
   pillarName: string
   fields: {
+    thumbnail: string
     trailText: string
   }
+  tags: Tag[]
 }
 
 export type GuardianAPIData = {

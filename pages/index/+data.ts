@@ -1,11 +1,5 @@
-import { GuardianAPIData } from '@/types'
-import fetch from 'cross-fetch'
+import { getGuardianData } from '@/helpers'
 
 export const data = async () => {
-  const response = await fetch(
-    `${import.meta.env.GUARDIAN_API}/search?q=italy AND sweden&show-fields=trailText&api-key=${import.meta.env.GUARDIAN_API_KEY}`,
-  )
-
-  const newsData: Awaited<GuardianAPIData> = await response.json()
-  return newsData
+  return await getGuardianData()
 }
