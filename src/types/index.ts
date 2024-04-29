@@ -1,49 +1,33 @@
+export type { GuardianAPIData, GuardianAPIDataByID } from './api'
+export type { News, NewsCard }
+
 type Tag = {
-  apiUrl: string
-  id: `${string}/${string}`
-  sectionId: string
-  sectionName: string
-  type: string
-  webTitle: string
-  webUrl: string
+  id: string
+  title: string
+}
+
+type NewsCard = {
+  excerpt: string
+  id: string
+  media: {
+    thumbnail: string
+    alt: string
+  }
+  publishedOn: string
+  title: string
 }
 
 type News = {
+  body: string
+  caption: string
+  credit: string
+  publishedOn: string
+  excerpt: string
   id: string
-  /** @todo Double-check this */
-  type: string
-  /** @todo Double-check this */
-  sectionId: string
-  /** @todo Double-check this */
-  sectionName: string
-  webPublicationDate: string
-  webTitle: string
-  webUrl: string
-  apiUrl: string
-  isHosted: boolean
-  /** @todo Double-check this */
-  pillarId: string
-  /** @todo Double-check this */
-  pillarName: string
-  fields: {
-    thumbnail: string
-    trailText: string
+  media: {
+    alt: string
+    src: string
   }
   tags: Tag[]
-}
-
-export type GuardianAPIData = {
-  response: {
-    /** @todo This should be an union between different status codes */
-    status: string
-    userTier: string
-    total: number
-    startIndex: number
-    pageSize: number
-    currentPage: number
-    pages: number
-    /** @todo This should be an union between different values */
-    orderBy: string
-    results: News[]
-  }
+  title: string
 }
