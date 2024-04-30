@@ -1,3 +1,5 @@
+export { getGuardianData, getGuardianDataById }
+
 import type { GuardianAPIData, GuardianAPIDataByID } from '@/types'
 import fetch from 'cross-fetch'
 
@@ -12,7 +14,7 @@ type Options = {
  *
  * @todo Make sure to complete this one
  */
-export async function getGuardianData(options: Options) {
+async function getGuardianData(options: Options) {
   const page = options.page
   const query = options.query
   const section = options.section
@@ -25,7 +27,7 @@ export async function getGuardianData(options: Options) {
   return guardianData
 }
 
-export async function getGuardianDataById(id: string) {
+async function getGuardianDataById(id: string) {
   const response = await fetch(
     `${import.meta.env.GUARDIAN_API}/${id}?api-key=${import.meta.env.GUARDIAN_API_KEY}&show-fields=all&show-elements=image,alt&show-tags=all`,
   )
