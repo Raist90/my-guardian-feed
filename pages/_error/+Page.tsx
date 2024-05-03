@@ -2,7 +2,7 @@ import React from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
 
 export default function Page() {
-  const { is404 } = usePageContext()
+  const { abortReason, is404 } = usePageContext()
   if (is404) {
     return (
       <>
@@ -14,7 +14,11 @@ export default function Page() {
     return (
       <>
         <h1>500 Internal Server Error</h1>
-        <p>Something went wrong.</p>
+        {import.meta.env.DEV && abortReason ? (
+          <p>{String(abortReason)}</p>
+        ) : (
+          <p>Something went wrong.</p>
+        )}
       </>
     )
   }
