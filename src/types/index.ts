@@ -19,8 +19,8 @@ type NewsCard = {
 
 type News = {
   body: string
-  caption: string
-  credit: string
+  caption?: string
+  credit?: string
   publishedOn: string
   excerpt: string
   id: string
@@ -30,4 +30,5 @@ type News = {
   }
   tags: Tag[]
   title: string
+  type: 'image' | 'video'
 }
