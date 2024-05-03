@@ -14,6 +14,13 @@ h6 {
   font-weight: 700 !important;
 }
 
+/* Some divs can contain blocks with real-time updates */
+div.block {
+  border-width: 1px;
+  padding: 1rem;
+  margin-block: 1rem;
+}
+
 /* Reset */
 body {
   margin: 0;
