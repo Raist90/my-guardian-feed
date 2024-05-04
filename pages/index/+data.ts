@@ -4,7 +4,8 @@ import type { GuardianAPIData, NewsCard } from '@/types'
 export async function data() {
   const guardianData = await getGuardianData({
     page: 1,
-    query: 'europe AND italy',
+    // query: 'europe AND italy',
+    query: '',
     section: 'world|politic|economic|culture',
   })
 

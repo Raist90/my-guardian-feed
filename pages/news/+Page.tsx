@@ -15,8 +15,7 @@ export default function Page() {
 
   if (isVideo) {
     const regex = /<iframe .*?src="(.*?)".*?><\/iframe>/
-    assert(regex, 'Regex is not working')
-
+    // this will return only the src attribute from the HTML response
     videoSrc = news.media.src.split(regex)[1]
   } else videoSrc = news.media.src
 
@@ -62,9 +61,8 @@ export default function Page() {
       </div>
 
       <div className='my-8 lg:mx-auto lg:w-8/12'>
-        {/** @todo Wrap this into a component and handle styles there */}
         <div
-          className='[&_iframe]:max-h-200px [&_figcaption]:my-4 [&_figcaption]:text-xs [&_figure]:my-4 [&_iframe]:aspect-video [&_iframe]:w-auto md:[&_iframe]:h-[400px] [&_p]:mb-4'
+          className='[&_p]:mb-4'
           dangerouslySetInnerHTML={{ __html: news.body }}
         />
       </div>

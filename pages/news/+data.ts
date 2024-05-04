@@ -1,8 +1,7 @@
 import { assert } from '@/helpers/assert'
 import { getGuardianDataById } from '@/helpers/getGuardianData'
-import { isString } from '@/helpers/predicates'
 import type { GuardianAPIDataByID, News } from '@/types'
-import { render } from 'vike/abort'
+import * as sanitizeHTML from 'sanitize-html'
 import type { PageContextServer } from 'vike/types'
 
 export async function data(pageContext: PageContextServer): Promise<News> {
@@ -41,13 +40,15 @@ function transformer(data: GuardianAPIDataByID): News {
   assert(metaData, 'No metaData on element')
 
   const { typeData } = metaData
+  assert(typeData.altText)
+  fields.body = sanitizeHTML.default(fields.body)
+
   const tags = contentTags.map((tag) => {
     const { id, webTitle } = tag
     return { id, title: webTitle }
   })
 
   if (isImage) {
-    assert(typeData.altText)
     return {
       body: fields.body,
       caption: typeData.caption,
@@ -64,9 +65,8 @@ function transformer(data: GuardianAPIDataByID): News {
       type: 'image',
     }
   }
-  // if `isVideo` we use a thumbnail as fallback for `file`
+  // if `isVideo` we use main as fallback for `file`
   else {
-    assert(typeData.altText)
     return {
       body: fields.body,
       excerpt: fields.trailText,
