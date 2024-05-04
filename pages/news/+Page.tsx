@@ -25,8 +25,8 @@ export default function Page() {
         <h1 className='text-xl lg:text-3xl'>{news.title}</h1>
       </div>
 
-      <div className='flex w-full flex-col gap-4 lg:flex-row'>
-        <div className='relative aspect-video max-h-[200px] w-full md:max-h-[400px]'>
+      <div className='grid w-full gap-4 lg:grid-cols-12'>
+        <div className='relative aspect-video w-full lg:col-span-7'>
           {isImage ? (
             <img
               className='absolute h-full w-full object-cover'
@@ -41,7 +41,7 @@ export default function Page() {
           )}
         </div>
 
-        <div className='text-sm'>
+        <div className='text-sm lg:col-span-5'>
           <p className='mb-1 text-xs'>{news.publishedOn}</p>
           <p className='mb-4 hidden text-xl italic'>{news.excerpt}</p>
           <p className='mb-1'>{news.caption}</p>
