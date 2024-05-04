@@ -14,19 +14,14 @@ h6 {
   font-weight: 700 !important;
 }
 
-/* Some divs can contain blocks with real-time updates */
-div.block {
-  border-width: 1px;
-  padding: 1rem;
-  margin-block: 1rem;
-}
-
 /* Reset */
 body {
   margin: 0;
   font-family: 'Space Mono', monospace;
   font-weight: 400;
   font-style: normal;
+  background: rgb(27, 27, 27);
+  color: rgb(255, 255, 255);
 }
 * {
   box-sizing: border-box;

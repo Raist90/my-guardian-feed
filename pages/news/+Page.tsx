@@ -22,7 +22,7 @@ export default function Page() {
   return (
     <section className='grid gap-8 md:p-8'>
       <div>
-        <h1 className='text-3xl'>{news.title}</h1>
+        <h1 className='text-xl lg:text-3xl'>{news.title}</h1>
       </div>
 
       <div className='flex w-full flex-col gap-4 lg:flex-row'>
@@ -43,7 +43,7 @@ export default function Page() {
 
         <div className='text-sm'>
           <p className='mb-1 text-xs'>{news.publishedOn}</p>
-          <p className='mb-4 text-xl italic'>{news.excerpt}</p>
+          <p className='mb-4 hidden text-xl italic'>{news.excerpt}</p>
           <p className='mb-1'>{news.caption}</p>
           <p className='mb-4 text-xs'>{news.credit}</p>
           <ul className='flex flex-wrap gap-x-2 gap-y-1 text-xs'>
@@ -62,7 +62,7 @@ export default function Page() {
 
       <div className='my-8 lg:mx-auto lg:w-8/12'>
         <div
-          className='[&_p]:mb-4'
+          className='[&_div]:mb-12 [&_p]:mb-4'
           dangerouslySetInnerHTML={{ __html: news.body }}
         />
       </div>
