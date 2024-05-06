@@ -39,8 +39,12 @@ function transformer(data: GuardianAPIDataByID): News {
     : assets?.find((asset) => asset.typeData.iframeUrl)
   assert(metaData, 'No metaData on element')
 
+  /**
+   * @todo Seems like some news only have metadata.file and then a typeData that
+   *   looks like this {}. Figure out what to do in this case
+   */
   const { typeData } = metaData
-  assert(typeData.altText)
+  assert(typeData.altText, 'No alt tag on element')
   fields.body = sanitizeHTML.default(fields.body)
 
   const tags = contentTags.map((tag) => {
