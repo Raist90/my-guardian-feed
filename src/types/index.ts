@@ -1,5 +1,5 @@
 export type { GuardianAPIData, GuardianAPIDataByID } from './api'
-export type { News, NewsCard }
+export type { News, NewsCard, NewsCardWithPages }
 
 type Tag = {
   id: string
@@ -15,6 +15,12 @@ type NewsCard = {
   }
   publishedOn: string
   title: string
+}
+
+type NewsCardWithPages = {
+  currentPage: number
+  pages: number
+  results: NewsCard[]
 }
 
 type News = {

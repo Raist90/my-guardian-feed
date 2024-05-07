@@ -6,10 +6,19 @@ import { usePageContext } from 'vike-react/usePageContext'
 
 function SectionList() {
   const { urlParsed } = usePageContext()
-  const sections = ['world', 'sport', 'culture', 'books', 'artanddesign']
+  const sections = [
+    'world',
+    'sport',
+    'culture',
+    'books',
+    'artanddesign',
+    'environment',
+    'technology',
+  ]
 
   let selectedSections: string[]
 
+  /** @todo Not sure if a question mark is needed here, check it out */
   if (urlParsed.searchAll.section?.length) {
     selectedSections = urlParsed.searchAll.section[0].split('|')
   } else {
@@ -17,9 +26,10 @@ function SectionList() {
   }
 
   const handleClick = (isActive: boolean, id: string) => {
-    let { location } = window
+    const { location } = window
     if (isActive) {
       const updatedSelection = selectedSections.filter(
+        // removing current id from selection
         (selectedSection) => selectedSection !== id,
       )
       if (!updatedSelection.length) {
