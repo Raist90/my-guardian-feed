@@ -1,9 +1,10 @@
 export { getGuardianData, getGuardianDataById }
 
+import { ONE_HOUR, TEN_MINUTES } from '@/constants'
 import type { GuardianAPIData, GuardianAPIDataByID } from '@/types'
 import { GuardianAPIDataByIDSchema, GuardianAPIDataSchema } from '@/zod/schemas'
-import fetch from 'cross-fetch'
 import { assert } from './assert'
+import { fetchWithCache } from './fetchWithCache'
 
 type Options = {
   page: number
@@ -11,21 +12,14 @@ type Options = {
   section: string
 }
 
-/**
- * Use this only serverside in order to not expose your api key
- *
- * @todo Make sure to complete this one. Maybe could be worth to change this
- *   file name by adding server.ts at the end so that it will be only called
- *   serverside (check vike docs)
- */
+// use this only serverside in order to not expose the api key
 async function getGuardianData(options: Options): Promise<GuardianAPIData> {
   const { page, query, section } = options
 
-  const response = await fetch(
+  const guardianData = await fetchWithCache<GuardianAPIData>(
     `${import.meta.env.GUARDIAN_API}/search?q=${query}&show-fields=trailText,thumbnail&show-tags=all&section=${section}&order-by=newest&page=${page}&api-key=${import.meta.env.GUARDIAN_API_KEY}`,
+    TEN_MINUTES,
   )
-
-  const guardianData: Awaited<GuardianAPIData> = await response.json()
 
   const { data, success, error } = GuardianAPIDataSchema.safeParse(guardianData)
   assert(success, error)
@@ -34,11 +28,10 @@ async function getGuardianData(options: Options): Promise<GuardianAPIData> {
 }
 
 async function getGuardianDataById(id: string): Promise<GuardianAPIDataByID> {
-  const response = await fetch(
+  const guardianDataById = await fetchWithCache<GuardianAPIDataByID>(
     `${import.meta.env.GUARDIAN_API}/${id}?api-key=${import.meta.env.GUARDIAN_API_KEY}&show-fields=all&show-elements=all&show-tags=all`,
+    ONE_HOUR,
   )
-
-  const guardianDataById: Awaited<GuardianAPIDataByID> = await response.json()
 
   const { data, success, error } =
     GuardianAPIDataByIDSchema.safeParse(guardianDataById)

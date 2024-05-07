@@ -1,3 +1,4 @@
+import { isDevelopment } from '@/helpers/isDevelopment'
 import React from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
 
@@ -14,7 +15,7 @@ export default function Page() {
     return (
       <>
         <h1>500 Internal Server Error</h1>
-        {import.meta.env.DEV && abortReason ? (
+        {isDevelopment && abortReason ? (
           <p>{String(abortReason)}</p>
         ) : (
           <p>Something went wrong.</p>
