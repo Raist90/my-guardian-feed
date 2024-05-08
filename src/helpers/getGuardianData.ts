@@ -9,15 +9,16 @@ import { fetchWithCache } from './fetchWithCache'
 type Options = {
   page: number
   query: string
-  section: string
+  section?: string
 }
 
 // use this only serverside in order to not expose the api key
 async function getGuardianData(options: Options): Promise<GuardianAPIData> {
   const { page, query, section } = options
+  const sectionQuery = section ? `section=${section}&` : ``
 
   const guardianData = await fetchWithCache<GuardianAPIData>(
-    `${import.meta.env.GUARDIAN_API}/search?q=${query}&show-fields=trailText,thumbnail&show-tags=all&section=${section}&order-by=newest&page=${page}&api-key=${import.meta.env.GUARDIAN_API_KEY}`,
+    `${import.meta.env.GUARDIAN_API}/search?q=${query}&show-fields=trailText,thumbnail&show-tags=all&${sectionQuery}order-by=newest&page=${page}&api-key=${import.meta.env.GUARDIAN_API_KEY}`,
     TEN_MINUTES,
   )
 

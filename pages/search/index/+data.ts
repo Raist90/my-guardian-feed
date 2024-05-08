@@ -9,7 +9,7 @@ async function data(pageContext: PageContext) {
   const guardianData = await getGuardianData({
     page: Number(pageContext.urlParsed.search.page) || 1,
     query: pageContext.urlParsed.search.q || '',
-    section: pageContext.urlParsed.search.section || INITIAL_SECTIONS,
+    section: pageContext.urlParsed.search.section,
   })
 
   return newsCardListTransformer(guardianData)
