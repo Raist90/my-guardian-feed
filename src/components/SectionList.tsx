@@ -26,9 +26,7 @@ function SectionList() {
     selectedSections = []
   }
 
-  /** @todo Move this somewhere else */
   const handleClick = (isActive: boolean, id: string) => {
-    const { location } = window
     if (isActive) {
       const updatedSelection = selectedSections.filter(
         // removing current id from selection
@@ -48,9 +46,7 @@ function SectionList() {
     }
   }
 
-  /** @todo Move this somewhere else */
   const handleSave = () => {
-    const { localStorage } = window
     // remove page number from URL because we don't want to store it on localStorage
     const currentURL = urlOriginal.split('&page')[0]
 
@@ -71,9 +67,7 @@ function SectionList() {
       console.log(`${FEED_KEY} stored! URL is:`, localStorage.getItem(FEED_KEY))
   }
 
-  /** @todo Move this somewhere else */
   const handleLoad = () => {
-    const { location, localStorage } = window
     const storedURL = localStorage.getItem(FEED_KEY)
     if (storedURL) {
       location.href = storedURL
