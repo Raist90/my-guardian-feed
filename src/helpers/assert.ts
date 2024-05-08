@@ -13,8 +13,8 @@ function assert(condition: unknown, msg?: unknown): asserts condition {
   if (isDevelopment) {
     if (msg) {
       console.error(msg)
-      throw render(500, defaultErrMsg)
-    } else throw render(500, defaultErrMsg)
+    }
+    throw render(500, defaultErrMsg)
   }
 
   throw render(500)

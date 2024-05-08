@@ -25,17 +25,19 @@ function Pagination() {
   }
 
   return (
-    <div
-      className={clsx(
-        currentPage > 1 && 'justify-between',
-        'my-4 flex justify-around',
-      )}
-    >
-      {currentPage > 1 && <Link href={prevPageUrl}>Prev page</Link>}
-      <p>
+    <>
+      <div
+        className={clsx(
+          currentPage > 1 && 'justify-between',
+          'my-4 flex justify-end',
+        )}
+      >
+        {currentPage > 1 && <Link href={prevPageUrl}>Prev page</Link>}
+        <Link href={nextPageUrl}>Next page</Link>
+      </div>
+      <p className='mt-8 text-center text-xs'>
         Page {currentPage} of {pages}
       </p>
-      <Link href={nextPageUrl}>Next page</Link>
-    </div>
+    </>
   )
 }
