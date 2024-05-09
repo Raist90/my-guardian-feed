@@ -26,7 +26,7 @@ function SectionList() {
     selectedSections = []
   }
 
-  const handleClick = (isActive: boolean, id: string) => {
+  const handleAddFilter = (isActive: boolean, id: string) => {
     if (isActive) {
       const updatedSelection = selectedSections.filter(
         // removing current id from selection
@@ -75,23 +75,33 @@ function SectionList() {
     if (isDevelopment) console.log('No stored filters')
   }
 
+  const handleResetFilters = () => {
+    location.href = '/'
+  }
+
   return (
     <div className='mb-8 flex flex-wrap justify-between gap-y-4 text-xs'>
       <div className='flex flex-wrap gap-2'>
         {sections.map((section) => {
           const isActive = selectedSections.includes(section)
           return (
-            <button
-              onClick={() => handleClick(isActive, section)}
-              className={clsx(isActive && 'bg-purple-500', 'border p-2')}
-              key={section}
-            >
-              {section}
-            </button>
+            <div className='inline-flex items-center gap-1' key={section}>
+              <input
+                checked={isActive}
+                className={clsx(isActive && 'bg-purple-500', 'border p-2')}
+                id={section}
+                onChange={() => handleAddFilter(isActive, section)}
+                type='checkbox'
+              />
+              <label htmlFor={section}>{section}</label>
+            </div>
           )
         })}
       </div>
       <div>
+        <button onClick={handleResetFilters} className='border p-2'>
+          Reset filters
+        </button>
         <button onClick={handleLoad} className='border p-2'>
           Load filters
         </button>
