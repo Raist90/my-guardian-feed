@@ -71,8 +71,7 @@ function SectionList() {
     const storedURL = localStorage.getItem(FEED_KEY)
     if (storedURL) {
       location.href = storedURL
-    }
-    if (isDevelopment) console.log('No stored filters')
+    } else if (isDevelopment) console.log('No stored filters')
   }
 
   const handleResetFilters = () => {

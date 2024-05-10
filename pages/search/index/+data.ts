@@ -1,6 +1,5 @@
 export { data }
 
-import { INITIAL_SECTIONS } from '@/constants'
 import { getGuardianData } from '@/helpers/getGuardianData'
 import { newsCardListTransformer } from '@/helpers/newsCardListTransformer'
 import type { PageContext } from 'vike/types'

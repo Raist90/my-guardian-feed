@@ -1,3 +1,4 @@
+import { Feed } from '@/components/Feed'
 import { NewsCardList } from '@/components/NewsCardList'
 import { Pagination } from '@/components/Pagination'
 import type { NewsCardWithPages } from '@/types'
@@ -8,10 +9,9 @@ export default function Page() {
   const newsCardList = useData<NewsCardWithPages>()
 
   return (
-    <div className='mx-auto w-full p-4 xl:w-8/12'>
-      <h1 className='pb-4 text-3xl font-bold'>News List</h1>
+    <Feed title='Guardian Feed'>
       <NewsCardList newsCardList={newsCardList.results} />
       <Pagination />
-    </div>
+    </Feed>
   )
 }

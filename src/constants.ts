@@ -3,12 +3,14 @@ export {
   HOMEPAGE_ROUTE,
   ONE_HOUR,
   PAGE_ROUTE_PREFIX,
+  SEARCH_ROUTE,
   SECTION_ROUTE_PREFIX,
   TEN_MINUTES,
 }
 
 // routes and route prefixes
 const HOMEPAGE_ROUTE = '/'
+const SEARCH_ROUTE = '/search'
 const PAGE_ROUTE_PREFIX = 'search?page='
 const SECTION_ROUTE_PREFIX = 'search?section='
 
