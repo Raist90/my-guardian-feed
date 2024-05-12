@@ -20,7 +20,7 @@ export default function Page() {
   } else videoSrc = news.media.src
 
   return (
-    <section className='grid gap-8 md:p-8'>
+    <section className='grid gap-8 p-4 md:p-8'>
       <div>
         <h1 className='text-xl lg:text-3xl'>{news.title}</h1>
       </div>
