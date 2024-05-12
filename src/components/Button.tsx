@@ -1,6 +1,7 @@
 export { Button }
 
 import { capitalize } from '@/helpers/capitalize'
+import { useCustomFeed } from '@/hooks/useCustomFeed'
 import React from 'react'
 
 type ButtonProps =
@@ -17,6 +18,7 @@ type ButtonProps =
     }
 
 function Button(props: ButtonProps) {
+  const customFeed = useCustomFeed()
   if ('isButtonGroup' in props) {
     const { buttonGroup, isDisabled, handlers } = props
     return (
@@ -25,7 +27,7 @@ function Button(props: ButtonProps) {
           <button
             onClick={handlers[`handle${capitalize(button)}`]}
             className='border p-2 disabled:opacity-75'
-            disabled={button !== 'load' && isDisabled}
+            disabled={button !== 'load' ? isDisabled : !customFeed}
             key={button}
           >
             {`${capitalize(button)} filters`}

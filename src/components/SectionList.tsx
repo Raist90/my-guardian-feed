@@ -80,7 +80,7 @@ function SectionList() {
     const storedURL = localStorage.getItem(FEED_KEY)
     if (storedURL) {
       location.href = storedURL
-    } else if (isDevelopment) console.log('No stored filters')
+    }
   }
 
   const handleReset = () => {

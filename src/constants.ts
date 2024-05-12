@@ -3,11 +3,13 @@ export {
   HARDCODED_SECTION_LIST,
   HOMEPAGE_ROUTE,
   IMAGE_PLACEHOLDER,
+  NO_CLIENTSIDE,
   NO_SERVERSIDE,
   ONE_HOUR,
   PAGE_ROUTE_PREFIX,
   SEARCH_ROUTE,
   SECTION_ROUTE_PREFIX,
+  SITE_TITLE,
   TEN_MINUTES,
   TOAST_MESSAGES,
   TOAST_TYPES,
@@ -56,3 +58,10 @@ const HARDCODED_SECTION_LIST = [
 function NO_SERVERSIDE(funcName: string): string {
   return `You are using ${funcName} on server while it is meant to be used only clientside`
 }
+
+function NO_CLIENTSIDE(funcName: string): string {
+  return `You are using ${funcName} on client while it is meant to be used only serverside`
+}
+
+// misc
+const SITE_TITLE = 'My Guardian Feed'

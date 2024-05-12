@@ -1,10 +1,11 @@
 export { getGuardianData, getGuardianDataById }
 
-import { ONE_HOUR, TEN_MINUTES } from '@/constants'
+import { NO_CLIENTSIDE, ONE_HOUR, TEN_MINUTES } from '@/constants'
 import type { GuardianAPIData, GuardianAPIDataByID } from '@/types'
 import { GuardianAPIDataByIDSchema, GuardianAPIDataSchema } from '@/zod/schemas'
 import { assert } from './assert'
 import { fetchWithCache } from './fetchWithCache'
+import { isBrowser } from './isBrowser'
 
 type Options = {
   page: number
@@ -12,8 +13,10 @@ type Options = {
   section?: string
 }
 
-// use this only serverside in order to not expose the api key
 async function getGuardianData(options: Options): Promise<GuardianAPIData> {
+  const msg = NO_CLIENTSIDE(getGuardianData.name)
+  assert(!isBrowser(), msg)
+
   const { page, query, section } = options
   const sectionQuery = section ? `section=${section}&` : ``
 
@@ -29,6 +32,9 @@ async function getGuardianData(options: Options): Promise<GuardianAPIData> {
 }
 
 async function getGuardianDataById(id: string): Promise<GuardianAPIDataByID> {
+  const msg = NO_CLIENTSIDE(getGuardianData.name)
+  assert(!isBrowser(), msg)
+
   const guardianDataById = await fetchWithCache<GuardianAPIDataByID>(
     `${import.meta.env.GUARDIAN_API}/${id}?api-key=${import.meta.env.GUARDIAN_API_KEY}&show-fields=all&show-elements=all&show-tags=all`,
     ONE_HOUR,

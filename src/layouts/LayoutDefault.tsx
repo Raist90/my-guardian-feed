@@ -1,6 +1,6 @@
 import './style.css'
 
-import { Link } from '@/components/Link'
+import { Navigation } from '@/components/Navigation'
 import React from 'react'
 import './tailwind.css'
 
@@ -10,17 +10,9 @@ export default function LayoutDefault({
   children: React.ReactNode
 }) {
   return (
-    <main className='p-4'>
+    <main>
       <Navigation />
       {children}
     </main>
-  )
-}
-
-function Navigation() {
-  return (
-    <nav className='mb-4 inline-flex gap-2 border p-4'>
-      <Link href='/'>Feed</Link>
-    </nav>
   )
 }
