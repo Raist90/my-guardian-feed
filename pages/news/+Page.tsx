@@ -50,9 +50,10 @@ export default function Page() {
             {isArray(news.tags) &&
               news.tags.map((tag) => {
                 const { id, title } = tag
+                const prefix = '#'
                 return (
                   <li className='italic' key={id}>
-                    #{title.toLowerCase()}
+                    {`${prefix}${title.toLowerCase()}`}
                   </li>
                 )
               })}
