@@ -9,7 +9,6 @@ type NewsCardListProps = {
   newsCardList: NewsCardType[]
 }
 
-/** @todo Div, h1 and section should be outside of this component */
 function NewsCardList({ newsCardList }: NewsCardListProps) {
   return (
     <>

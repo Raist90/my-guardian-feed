@@ -33,6 +33,7 @@
     "vite-plugin-webfont-dl": "^3.9.4"
   },
   "dependencies": {
+    "@headlessui/react": "^2.0.3",
     "@vitejs/plugin-react": "^4.2.1",
     "clsx": "^2.1.1",
     "cross-fetch": "^4.0.0",

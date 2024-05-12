@@ -62,7 +62,7 @@ export default function Page() {
 
       <div className='my-8 lg:mx-auto lg:w-8/12'>
         <div
-          className='[&_div]:mb-12 [&_p]:mb-4'
+          className='[&_a]:underline [&_div]:mb-12 [&_p]:mb-4'
           dangerouslySetInnerHTML={{ __html: news.body }}
         />
       </div>

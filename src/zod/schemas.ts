@@ -25,7 +25,7 @@ const NewsCardSchema = z.object({
   pillarId: z.string(),
   pillarName: z.string(),
   fields: z.object({
-    thumbnail: z.string(),
+    thumbnail: z.string().optional(),
     trailText: z.string(),
   }),
   tags: z.array(TagSchema),

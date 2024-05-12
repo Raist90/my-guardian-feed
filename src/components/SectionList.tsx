@@ -1,21 +1,30 @@
 export { SectionList }
-import { FEED_KEY, HOMEPAGE_ROUTE, SECTION_ROUTE_PREFIX } from '@/constants'
+
+import {
+  FEED_KEY,
+  HARDCODED_SECTION_LIST,
+  HOMEPAGE_ROUTE,
+  SECTION_ROUTE_PREFIX,
+  TOAST_MESSAGES,
+  TOAST_TYPES,
+} from '@/constants'
 import { isDevelopment } from '@/helpers/isDevelopment'
+import { isHomepage } from '@/helpers/isHomepage'
 import clsx from 'clsx'
-import React from 'react'
+import React, { useState } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
+import { Button } from './Button'
+import { Toast } from './Toast'
 
 function SectionList() {
   const { urlOriginal, urlParsed } = usePageContext()
-  const sections = [
-    'world',
-    'sport',
-    'culture',
-    'books',
-    'artanddesign',
-    'environment',
-    'technology',
-  ]
+  let [isOpen, setIsOpen] = useState(false)
+  let [toastProps, setToastProps] = useState<{
+    msg: string
+    type: Lowercase<keyof typeof TOAST_TYPES>
+  }>({ msg: '', type: TOAST_TYPES['ERROR'] })
+
+  const sections = HARDCODED_SECTION_LIST
 
   let selectedSections: string[]
 
@@ -54,17 +63,17 @@ function SectionList() {
     if (hasStoredURL) {
       localStorage.removeItem(FEED_KEY)
       if (isDevelopment) console.log(`${FEED_KEY} removed!`)
-      localStorage.setItem(FEED_KEY, currentURL)
-      if (isDevelopment)
-        console.log(
-          `${FEED_KEY} stored! URL is:`,
-          localStorage.getItem(FEED_KEY),
-        )
-      return
     }
     localStorage.setItem(FEED_KEY, currentURL)
     if (isDevelopment)
       console.log(`${FEED_KEY} stored! URL is:`, localStorage.getItem(FEED_KEY))
+
+    setToastProps({
+      msg: TOAST_MESSAGES['SAVE_FILTERS'],
+      type: TOAST_TYPES['SUCCESS'],
+    })
+
+    setIsOpen(true)
   }
 
   const handleLoad = () => {
@@ -74,12 +83,14 @@ function SectionList() {
     } else if (isDevelopment) console.log('No stored filters')
   }
 
-  const handleResetFilters = () => {
-    location.href = '/'
+  const handleReset = () => {
+    location.href = HOMEPAGE_ROUTE
   }
 
+  const closeDialog = () => setIsOpen(false)
+
   return (
-    <div className='mb-8 flex flex-wrap justify-between gap-y-4 text-xs'>
+    <div className='mb-8 flex flex-wrap justify-between gap-4 text-xs'>
       <div className='flex flex-wrap gap-2'>
         {sections.map((section) => {
           const isActive = selectedSections.includes(section)
@@ -97,17 +108,22 @@ function SectionList() {
           )
         })}
       </div>
-      <div>
-        <button onClick={handleResetFilters} className='border p-2'>
-          Reset filters
-        </button>
-        <button onClick={handleLoad} className='border p-2'>
-          Load filters
-        </button>
-        <button onClick={handleSave} className='border p-2'>
-          Save filters
-        </button>
+
+      <div className='flex flex-wrap gap-2'>
+        <Button
+          isButtonGroup={true}
+          buttonGroup={['load', 'reset', 'save']}
+          isDisabled={isHomepage(urlOriginal)}
+          handlers={{ handleLoad, handleReset, handleSave }}
+        />
       </div>
+
+      <Toast
+        isOpen={isOpen}
+        closeDialog={closeDialog}
+        message={toastProps?.msg || ''}
+        type={toastProps?.type || 'error'}
+      />
     </div>
   )
 }

@@ -16,7 +16,6 @@ type FeedProps = {
 function Feed({ title, children, ...rest }: FeedProps) {
   const customFeed = useCustomFeed()
   const { urlOriginal } = usePageContext()
-  console.log(urlOriginal)
 
   const { className } = rest
 

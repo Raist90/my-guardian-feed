@@ -1,5 +1,6 @@
 export { newsCardListTransformer }
 
+import { IMAGE_PLACEHOLDER } from '@/constants'
 import type { GuardianAPIData, NewsCardWithPages } from '@/types'
 
 function newsCardListTransformer(data: GuardianAPIData): NewsCardWithPages {
@@ -22,7 +23,7 @@ function newsCardListTransformer(data: GuardianAPIData): NewsCardWithPages {
         excerpt: trailText,
         id,
         media: {
-          thumbnail,
+          thumbnail: thumbnail || IMAGE_PLACEHOLDER,
           /** @todo Figure out how to extract this from `results` */
           alt: '',
         },
