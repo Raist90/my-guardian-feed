@@ -18,7 +18,7 @@ async function fetchWithCache<R extends unknown>(
 
     if (timer > currentTime) {
       if (isDevelopment) console.log('Returning cached Data')
-      return cache.get(url)
+      return cache.get(url)?.data
     } else {
       if (isDevelopment) console.log('Timer expired, deleting cached Data')
       cache.delete(url)
@@ -29,7 +29,7 @@ async function fetchWithCache<R extends unknown>(
   const data = await response.json()
   if (isDevelopment) console.log('Returning fresh Data')
 
-  cache.set(url, { ...data, timer: currentTime + ttl })
+  cache.set(url, { data, timer: currentTime + ttl })
 
   return data
 }
