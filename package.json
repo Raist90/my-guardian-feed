@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.0.3",
+    "@libsql/client": "^0.7.0",
     "@vercel/node": "^3.1.1",
     "@vitejs/plugin-react": "^4.2.1",
     "clsx": "^2.1.1",
