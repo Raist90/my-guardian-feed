@@ -13,6 +13,7 @@
   "keywords": [],
   "author": "",
   "devDependencies": {
+    "@hono/vite-dev-server": "^0.13.0",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
     "@types/sanitize-html": "^2.11.0",
@@ -34,11 +35,13 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.0.3",
+    "@hono/node-server": "^1.12.0",
     "@libsql/client": "^0.7.0",
     "@vercel/node": "^3.1.1",
     "@vitejs/plugin-react": "^4.2.1",
     "clsx": "^2.1.1",
     "cross-fetch": "^4.0.0",
+    "hono": "^4.4.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanitize-html": "^2.13.0",
