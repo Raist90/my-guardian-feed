@@ -1,8 +1,9 @@
 import { db } from '@/db/client'
+import { usersTable } from '@/drizzle/schema'
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
-import type { Row } from '@libsql/client'
 import bcrypt from 'bcryptjs'
+import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { compress } from 'hono/compress'
 import { getCookie, setCookie } from 'hono/cookie'
@@ -58,16 +59,18 @@ app.post('/get-token', async (c) => {
 })
 
 /** @todo This belongs to auth module/package */
-function userExists(rows: Row[]): boolean {
+function userExists(rows: (typeof usersTable.$inferSelect)[]): boolean {
   return rows.length > 0
 }
 
 /** @todo This belongs to auth module/package */
-async function getUserByEmail(email: string): Promise<{ rows: Row[] }> {
-  return await db.execute({
-    sql: 'SELECT * FROM users WHERE email = ?',
-    args: [email],
-  })
+async function getUserByEmail(
+  email: string,
+): Promise<(typeof usersTable.$inferSelect)[]> {
+  return await db
+    .select()
+    .from(usersTable)
+    .where(sql`${usersTable.email} = ${email}`)
 }
 
 async function checkUserPass(
@@ -79,7 +82,7 @@ async function checkUserPass(
 
 app.post('/auth', async (c) => {
   const req = await c.req.json<{ email: string; password: string }>()
-  const { rows } = await getUserByEmail(req.email)
+  const rows = await getUserByEmail(req.email)
 
   if (!userExists(rows)) {
     const payload = { error: `User with email "${req.email}" not found.` }
@@ -117,7 +120,7 @@ async function generateToken(email: string, role?: string): Promise<string> {
 
 app.post('/add-user', async (c) => {
   const req = await c.req.json<{ email: string; password: string }>()
-  const { rows } = await getUserByEmail(req.email)
+  const rows = await getUserByEmail(req.email)
 
   if (userExists(rows)) {
     const payload = { error: `User with email ${req.email} already exists.` }
@@ -126,15 +129,9 @@ app.post('/add-user', async (c) => {
 
   const hashedPassword = await bcrypt.hash(req.password, 10)
 
-  await db.batch(
-    [
-      {
-        sql: 'INSERT INTO users (email, password) VALUES (?, ?)',
-        args: [req.email, hashedPassword],
-      },
-    ],
-    'write',
-  )
+  await db
+    .insert(usersTable)
+    .values({ email: req.email, password: hashedPassword })
 
   const token = await generateToken(req.email)
   setCookie(c, 'token', JSON.stringify(token))
