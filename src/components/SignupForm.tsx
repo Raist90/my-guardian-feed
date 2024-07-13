@@ -1,20 +1,22 @@
-export { LoginForm }
-
 import { TOAST_TYPES } from '@/constants'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { navigate } from 'vike/client/router'
 import { Button } from './Button'
 import { Input } from './Input'
 import { Toast } from './Toast'
 
-function LoginForm() {
+export { SignupForm }
+
+function SignupForm() {
   let [isOpen, setIsOpen] = useState<boolean>(false)
   let [toastProps, setToastProps] = useState<{
     msg: string
     type: Lowercase<keyof typeof TOAST_TYPES>
   }>({ msg: '', type: TOAST_TYPES['ERROR'] })
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     e.preventDefault()
     setIsOpen(false)
 
@@ -24,7 +26,7 @@ function LoginForm() {
 
     const body = JSON.stringify({ email, password })
 
-    const res = await fetch('/auth', {
+    const res = await fetch('/add-user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body,
@@ -38,11 +40,9 @@ function LoginForm() {
         type: TOAST_TYPES['ERROR'],
       })
       setIsOpen(true)
-
-      return
+    } else {
+      navigate('/dashboard')
     }
-
-    navigate('/dashboard')
   }
 
   /** @todo Refactor this */
@@ -54,7 +54,7 @@ function LoginForm() {
         onSubmit={handleSubmit}
         className='mx-auto max-w-md rounded-md bg-black/30 p-6 shadow-xl shadow-white/10'
       >
-        <h2 className='mb-4 text-xl'>Log in</h2>
+        <h2 className='mb-4 text-xl'>Sign up</h2>
 
         <div className='space-y-6'>
           <div className='flex flex-col justify-center gap-2'>
@@ -66,7 +66,7 @@ function LoginForm() {
           </div>
 
           <Button className='w-full font-bold' type='submit'>
-            Log in
+            Create account
           </Button>
         </div>
       </form>
