@@ -1,13 +1,18 @@
+import {
+  checkUserPass,
+  generateToken,
+  getUserByEmail,
+  parseJwt,
+  userExists,
+} from '@/auth'
 import { db } from '@/db/client'
 import { usersTable } from '@/drizzle/schema'
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import bcrypt from 'bcryptjs'
-import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { compress } from 'hono/compress'
 import { getCookie, setCookie } from 'hono/cookie'
-import { sign } from 'hono/jwt'
 import { renderPage } from 'vike/server'
 
 const isProduction = import.meta.env.MODE === 'production'
@@ -51,10 +56,6 @@ app.get('*', async (c, next) => {
   return c.body(body)
 })
 
-function parseJwt(token: string): any {
-  return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
-}
-
 app.post('/get-token', async (c) => {
   const cookie = getCookie(c, 'token')
 
@@ -66,28 +67,6 @@ app.post('/get-token', async (c) => {
 
   return c.json(token)
 })
-
-/** @todo This belongs to auth module/package */
-function userExists(rows: (typeof usersTable.$inferSelect)[]): boolean {
-  return rows.length > 0
-}
-
-/** @todo This belongs to auth module/package */
-async function getUserByEmail(
-  email: string,
-): Promise<(typeof usersTable.$inferSelect)[]> {
-  return await db
-    .select()
-    .from(usersTable)
-    .where(sql`${usersTable.email} = ${email}`)
-}
-
-async function checkUserPass(
-  plainPass: string,
-  hash: string,
-): Promise<boolean> {
-  return await bcrypt.compare(plainPass, hash)
-}
 
 app.post('/auth', async (c) => {
   const req = await c.req.json<{ email: string; password: string }>()
@@ -116,16 +95,6 @@ app.post('/auth', async (c) => {
   const payload = { success: 'Successfully logged in!' }
   return c.json(payload)
 })
-
-async function generateToken(email: string, role?: string): Promise<string> {
-  const jwtSecret = import.meta.env.JWT_SECRET
-  const jwtPayload = {
-    user: email,
-    role: role || 'user',
-    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days
-  }
-  return await sign(jwtPayload, jwtSecret, 'HS256')
-}
 
 app.post('/add-user', async (c) => {
   const req = await c.req.json<{ email: string; password: string }>()
