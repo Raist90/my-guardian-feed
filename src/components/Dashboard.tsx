@@ -1,14 +1,11 @@
 export { Dashboard }
 
-import { useSession } from '@/hooks/useSession'
-import { navigate } from 'vike/client/router'
+import { usePageContext } from 'vike-react/usePageContext'
 
 function Dashboard() {
-  const { session, user, loading } = useSession()
-
-  if (!loading && !session) {
-    navigate('/login')
-  }
+  const {
+    token: { session, user },
+  } = usePageContext()
 
   return (
     <section>

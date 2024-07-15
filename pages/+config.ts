@@ -10,4 +10,5 @@ export default {
   Head,
   title: SITE_TITLE,
   extends: vikeReact,
+  passToClient: ['token'],
 } satisfies Config

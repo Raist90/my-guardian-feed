@@ -25,9 +25,18 @@ if (isProduction) {
   )
 }
 app.get('*', async (c, next) => {
+  const cookie = getCookie(c, 'token')
+
+  const token = cookie && parseJwt(cookie)
+
   const pageContextInit = {
     urlOriginal: c.req.url,
+    token: {
+      session: !!token,
+      user: token?.user || null,
+    },
   }
+
   const pageContext = await renderPage(pageContextInit)
   const { httpResponse } = pageContext
 
