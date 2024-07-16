@@ -1,14 +1,13 @@
+/* eslint-disable no-console */
 export { fetchWithCache }
 
 import { assert } from './assert'
 import { isDevelopment } from './isDevelopment'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cache = new Map<string, any & { timer: number }>()
 
-async function fetchWithCache<R extends unknown>(
-  url: string,
-  ttl: number,
-): Promise<R> {
+async function fetchWithCache<R>(url: string, ttl: number): Promise<R> {
   const currentTime = Date.now()
 
   if (cache.has(url)) {

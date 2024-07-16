@@ -21,14 +21,14 @@ function newsCardTransformer(data: GuardianAPIDataByID): News {
 
   const assets = elements?.find(
     (element) => element.relation === 'main' || element.relation === 'body',
-  )?.assets!
+  )?.assets
 
   const isImage = !!elements?.find((element) => element.relation === 'main')
   /** @todo Use this one or delete it */
   const isVideo = !!elements?.find((element) => element.relation === 'body')
 
   const metaData = isImage
-    ? assets?.find((asset) => asset.typeData.width === '1000')!
+    ? assets?.find((asset) => asset.typeData.width === '1000')
     : assets?.find((asset) => asset.typeData.iframeUrl)
 
   fields.body = sanitizeHTML.default(fields.body)

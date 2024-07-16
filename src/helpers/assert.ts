@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 export { assert }
 
 import { render } from 'vike/abort'

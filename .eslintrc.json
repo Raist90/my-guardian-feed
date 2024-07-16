@@ -1,8 +1,13 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "extends": ["prettier", "plugin:react/recommended"],
-  "plugins": ["react"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": ["react", "react-hooks"],
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": "latest",
@@ -14,5 +19,10 @@
     "react": {
       "version": "detect"
     }
+  },
+  "rules": {
+    "no-console": "warn",
+    "no-unneeded-ternary": "error",
+    "react/react-in-jsx-scope": "off"
   }
 }

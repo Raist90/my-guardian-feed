@@ -8,8 +8,8 @@ import { Input } from './Input'
 import { Toast } from './Toast'
 
 function LoginForm() {
-  let [isOpen, setIsOpen] = useState<boolean>(false)
-  let [toastProps, setToastProps] = useState<{
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [toastProps, setToastProps] = useState<{
     msg: string
     type: Lowercase<keyof typeof TOAST_TYPES>
   }>({ msg: '', type: TOAST_TYPES['ERROR'] })

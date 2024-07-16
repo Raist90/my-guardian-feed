@@ -18,8 +18,8 @@ import { Toast } from './Toast'
 
 function SectionList() {
   const { urlOriginal, urlParsed } = usePageContext()
-  let [isOpen, setIsOpen] = useState(false)
-  let [toastProps, setToastProps] = useState<{
+  const [isOpen, setIsOpen] = useState(false)
+  const [toastProps, setToastProps] = useState<{
     msg: string
     type: Lowercase<keyof typeof TOAST_TYPES>
   }>({ msg: '', type: TOAST_TYPES['ERROR'] })
@@ -62,10 +62,12 @@ function SectionList() {
     const hasStoredURL = !!localStorage.getItem(FEED_KEY)
     if (hasStoredURL) {
       localStorage.removeItem(FEED_KEY)
+      // eslint-disable-next-line no-console
       if (isDevelopment) console.log(`${FEED_KEY} removed!`)
     }
     localStorage.setItem(FEED_KEY, currentURL)
     if (isDevelopment)
+      // eslint-disable-next-line no-console
       console.log(`${FEED_KEY} stored! URL is:`, localStorage.getItem(FEED_KEY))
 
     setToastProps({

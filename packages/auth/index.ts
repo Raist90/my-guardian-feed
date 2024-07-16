@@ -32,6 +32,7 @@ async function getUserByEmail(
     .where(sql`${usersTable.email} = ${email}`)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseJwt(token: string): any {
   return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString())
 }

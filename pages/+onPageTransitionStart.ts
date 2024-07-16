@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import type { OnPageTransitionStartAsync } from 'vike/types'
 
 export const onPageTransitionStart: OnPageTransitionStartAsync = async () => {

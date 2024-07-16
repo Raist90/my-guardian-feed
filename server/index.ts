@@ -31,6 +31,7 @@ app.post('/auth', ...authHandler)
 app.post('/add-user', ...addUserHandler)
 
 if (isProduction) {
+  // eslint-disable-next-line no-console
   console.log(`Server listening on http://localhost:${port}`)
   serve({
     fetch: app.fetch,
