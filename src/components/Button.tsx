@@ -7,18 +7,18 @@ import React from 'react'
 
 type ButtonProps =
   | {
-    isButtonGroup: true
-    buttonGroup: string[]
-    isDisabled: boolean
-    handlers: Record<string, () => void>
-  }
+      isButtonGroup: true
+      buttonGroup: string[]
+      isDisabled: boolean
+      handlers: Record<string, () => void>
+    }
   | {
-    children: React.ReactNode | string
-    className?: string
-    isDisabled?: boolean
-    handler?: () => void
-    type?: HTMLButtonElement['type']
-  }
+      children: React.ReactNode | string
+      className?: string
+      isDisabled?: boolean
+      handler?: () => void
+      type?: HTMLButtonElement['type']
+    }
 
 function Button(props: ButtonProps) {
   const customFeed = useCustomFeed()
