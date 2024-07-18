@@ -1,15 +1,12 @@
 export { SectionList }
 
 import {
-  FEED_KEY,
   HARDCODED_SECTION_LIST,
   HOMEPAGE_ROUTE,
   SECTION_ROUTE_PREFIX,
   TOAST_MESSAGES,
   TOAST_TYPES,
 } from '@/constants'
-import { isDevelopment } from '@/helpers/isDevelopment'
-import { isHomepage } from '@/helpers/isHomepage'
 import clsx from 'clsx'
 import React, { useState } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
@@ -17,7 +14,11 @@ import { Button } from './Button'
 import { Toast } from './Toast'
 
 function SectionList() {
-  const { urlOriginal, urlParsed } = usePageContext()
+  const {
+    urlOriginal,
+    urlParsed,
+    token: { session, user },
+  } = usePageContext()
   const [isOpen, setIsOpen] = useState(false)
   const [toastProps, setToastProps] = useState<{
     msg: string
@@ -55,20 +56,15 @@ function SectionList() {
     }
   }
 
-  const handleSave = () => {
-    // remove page number from URL because we don't want to store it on localStorage
+  const handleSave = async (): Promise<void> => {
     const currentURL = urlOriginal.split('&page')[0]
+    const body = JSON.stringify({ email: user, url: currentURL })
 
-    const hasStoredURL = !!localStorage.getItem(FEED_KEY)
-    if (hasStoredURL) {
-      localStorage.removeItem(FEED_KEY)
-      // eslint-disable-next-line no-console
-      if (isDevelopment) console.log(`${FEED_KEY} removed!`)
-    }
-    localStorage.setItem(FEED_KEY, currentURL)
-    if (isDevelopment)
-      // eslint-disable-next-line no-console
-      console.log(`${FEED_KEY} stored! URL is:`, localStorage.getItem(FEED_KEY))
+    await fetch('/add-custom-feed-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    })
 
     setToastProps({
       msg: TOAST_MESSAGES['SAVE_FILTERS'],
@@ -78,11 +74,18 @@ function SectionList() {
     setIsOpen(true)
   }
 
-  const handleLoad = () => {
-    const storedURL = localStorage.getItem(FEED_KEY)
-    if (storedURL) {
-      location.href = storedURL
-    }
+  const handleLoad = async (): Promise<void> => {
+    const body = JSON.stringify({ email: user })
+
+    const res = await fetch('/load-custom-feed-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    })
+
+    const { customFeedURL } = await res.json()
+
+    location.href = customFeedURL
   }
 
   const handleReset = () => {
@@ -90,6 +93,8 @@ function SectionList() {
   }
 
   const closeDialog = () => setIsOpen(false)
+
+  const areFiltersEnabled = selectedSections.length > 0
 
   return (
     <div className='mb-8 flex flex-wrap justify-between gap-4 text-xs'>
@@ -115,7 +120,7 @@ function SectionList() {
         <Button
           isButtonGroup={true}
           buttonGroup={['load', 'reset', 'save']}
-          isDisabled={isHomepage(urlOriginal)}
+          isDisabled={!areFiltersEnabled || !session}
           handlers={{ handleLoad, handleReset, handleSave }}
         />
       </div>

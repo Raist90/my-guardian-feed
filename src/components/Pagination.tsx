@@ -11,17 +11,33 @@ import { Link } from './Link'
 function Pagination() {
   const {
     data: { currentPage, pages },
-    urlOriginal,
+    urlClient,
+    urlParsed,
   } = usePageContext() as PageContext<NewsCardWithPages>
 
   let prevPageUrl: string
   let nextPageUrl: string
-  if (urlOriginal.includes('search')) {
-    prevPageUrl = `${urlOriginal}&page=${currentPage - 1}`
-    nextPageUrl = `${urlOriginal}&page=${currentPage + 1}`
-  } else {
-    prevPageUrl = `${PAGE_ROUTE_PREFIX}${currentPage - 1}`
-    nextPageUrl = `${PAGE_ROUTE_PREFIX}${currentPage + 1}`
+
+  // on /search route
+  const isSearchPageRoot =
+    !urlParsed.searchOriginal ||
+    ('page' in urlParsed.search && Object.keys(urlParsed.search).length === 1)
+  // on /search? with queries
+  const isSearchPageWithQueries = urlClient.includes('search')
+
+  switch (true) {
+    case isSearchPageRoot:
+      prevPageUrl = `${PAGE_ROUTE_PREFIX}${currentPage - 1}`
+      nextPageUrl = `${PAGE_ROUTE_PREFIX}${currentPage + 1}`
+      break
+    case isSearchPageWithQueries:
+      // remove '&page=pageNumber' with split
+      prevPageUrl = `${urlParsed.searchOriginal?.split('&')[0]}&page=${currentPage - 1}`
+      nextPageUrl = `${urlParsed.searchOriginal?.split('&')[0]}&page=${currentPage + 1}`
+      break
+    default:
+      prevPageUrl = `${PAGE_ROUTE_PREFIX}${currentPage - 1}`
+      nextPageUrl = `${PAGE_ROUTE_PREFIX}${currentPage + 1}`
   }
 
   return (
@@ -32,8 +48,14 @@ function Pagination() {
           'my-4 flex justify-end',
         )}
       >
-        {currentPage > 1 && <Link href={prevPageUrl}>Prev page</Link>}
-        <Link href={nextPageUrl}>Next page</Link>
+        {currentPage > 1 && (
+          <Link intercept={true} href={prevPageUrl}>
+            Prev page
+          </Link>
+        )}
+        <Link intercept={true} href={nextPageUrl}>
+          Next page
+        </Link>
       </div>
       <p className='mt-8 text-center text-xs'>
         Page {currentPage} of {pages}

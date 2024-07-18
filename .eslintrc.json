@@ -23,6 +23,8 @@
   "rules": {
     "no-console": "warn",
     "no-unneeded-ternary": "error",
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "no-unused-vars": 0,
+    "@typescript-eslint/no-unused-vars": 0
   }
 }

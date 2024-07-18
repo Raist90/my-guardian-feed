@@ -3,10 +3,12 @@ import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
 import { compress } from 'hono/compress'
 import {
+  addCustomFeedURLHandler,
   addUserHandler,
   authHandler,
   catchAllHandler,
   getTokenHandler,
+  loadCustomFeedURLHandler,
 } from './handlers'
 
 const isProduction = import.meta.env.MODE === 'production'
@@ -29,6 +31,8 @@ app.get('*', ...catchAllHandler)
 app.post('/get-token', ...getTokenHandler)
 app.post('/auth', ...authHandler)
 app.post('/add-user', ...addUserHandler)
+app.post('/add-custom-feed-url', ...addCustomFeedURLHandler)
+app.post('/load-custom-feed-url', ...loadCustomFeedURLHandler)
 
 if (isProduction) {
   // eslint-disable-next-line no-console

@@ -6,6 +6,10 @@ declare global {
         session: boolean
         user: string | null
       }
+      userFeeds: {
+        customFeedURL: string | null
+      }
+      urlClient: string
       // Refine type of pageContext.Page (it's `unknown` by default)
       Page: () => JSX.Element
     }
