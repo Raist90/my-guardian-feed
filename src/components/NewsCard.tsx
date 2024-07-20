@@ -15,9 +15,15 @@ import { Toast } from './Toast'
 
 type NewsCardProps = {
   newsCard: NewsCardType
+  readLaterData: string | null
+  handleReadLaterDataUpdate: (data: string | null) => Promise<void>
 }
 
-function NewsCard({ newsCard }: NewsCardProps) {
+function NewsCard({
+  handleReadLaterDataUpdate,
+  newsCard,
+  readLaterData,
+}: NewsCardProps) {
   const {
     excerpt,
     id,
@@ -35,18 +41,16 @@ function NewsCard({ newsCard }: NewsCardProps) {
 
   const {
     token: { session, user },
-    userFeeds: { readLaterData },
   } = usePageContext()
 
-  const initialIsReadLater = isString(readLaterData)
+  const isReadLater = isString(readLaterData)
     ? readLaterData.length > 0 &&
-      !!(JSON.parse(readLaterData) as NewsCard[])?.find(
-        (news) => news.id === newsCard.id,
-      )
+    !!(JSON.parse(readLaterData) as NewsCard[])?.find(
+      (news) => news.id === newsCard.id,
+    )
     : false
 
-  const [isReadLater, setIsReadLater] = useState(initialIsReadLater)
-
+  /** @todo This is similar to handleRemoveReadLater. Try to do some refactor */
   const handleAddReadLater = async (): Promise<void> => {
     setIsLoading(true)
     setIsOpen(false)
@@ -87,7 +91,8 @@ function NewsCard({ newsCard }: NewsCardProps) {
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      setIsReadLater(true)
+      const parsedReq = JSON.parse(body).newsList
+      handleReadLaterDataUpdate(JSON.stringify(parsedReq))
     }
     setIsOpen(true)
     setIsLoading(false)
@@ -137,7 +142,8 @@ function NewsCard({ newsCard }: NewsCardProps) {
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      setIsReadLater(false)
+      const parsedReq = JSON.parse(body).newsList
+      handleReadLaterDataUpdate(JSON.stringify(parsedReq))
     }
     setIsOpen(true)
     setIsLoading(false)
@@ -146,7 +152,6 @@ function NewsCard({ newsCard }: NewsCardProps) {
   /** @todo Refactor this */
   const closeDialog = () => {
     setIsOpen(false)
-    window.location.reload() // we use this instead of Vike reload() because it keeps the scroll position
   }
 
   return (
