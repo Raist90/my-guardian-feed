@@ -9,7 +9,6 @@ import clsx from 'clsx'
 import { Clock } from 'lucide-react'
 import React, { useState } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
-import { reload } from 'vike/client/router'
 import { Button } from './Button'
 import { Link } from './Link'
 import { Toast } from './Toast'
@@ -39,12 +38,14 @@ function NewsCard({ newsCard }: NewsCardProps) {
     userFeeds: { readLaterData },
   } = usePageContext()
 
-  const isReadLater = isString(readLaterData)
+  const initialIsReadLater = isString(readLaterData)
     ? readLaterData.length > 0 &&
       !!(JSON.parse(readLaterData) as NewsCard[])?.find(
         (news) => news.id === newsCard.id,
       )
     : false
+
+  const [isReadLater, setIsReadLater] = useState(initialIsReadLater)
 
   const handleAddReadLater = async (): Promise<void> => {
     setIsLoading(true)
@@ -86,7 +87,7 @@ function NewsCard({ newsCard }: NewsCardProps) {
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      reload()
+      setIsReadLater(true)
     }
     setIsOpen(true)
     setIsLoading(false)
@@ -136,14 +137,17 @@ function NewsCard({ newsCard }: NewsCardProps) {
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      reload()
+      setIsReadLater(false)
     }
     setIsOpen(true)
     setIsLoading(false)
   }
 
   /** @todo Refactor this */
-  const closeDialog = () => setIsOpen(false)
+  const closeDialog = () => {
+    setIsOpen(false)
+    window.location.reload() // we use this instead of Vike reload() because it keeps the scroll position
+  }
 
   return (
     <div key={id} className='flex flex-col gap-4 p-4 md:flex-row'>

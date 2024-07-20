@@ -137,7 +137,7 @@ const addReadLaterHandler = factory.createHandlers(async (c) => {
     })
 
   return c.json({
-    success: 'News was successfully added to your Read leater list',
+    success: 'News was successfully added to your Read later list',
   })
 })
 
