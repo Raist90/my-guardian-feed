@@ -1,7 +1,6 @@
 export { Button }
 
 import { capitalize } from '@/helpers/capitalize'
-import { isBrowser } from '@/helpers/isBrowser'
 import clsx from 'clsx'
 import React from 'react'
 import { usePageContext } from 'vike-react/usePageContext'

@@ -1,5 +1,6 @@
 export {
   addCustomFeedURLHandler,
+  addReadLaterHandler,
   addUserHandler,
   authHandler,
   catchAllHandler,
@@ -16,16 +17,22 @@ import {
 } from '@/auth'
 import { db } from '@/db/client'
 import { userFeedsTable, usersTable } from '@/drizzle/schema'
+import { assert } from '@/helpers/assert'
 import { isArray } from '@/helpers/predicates'
+import { NewsCard } from '@/types'
 import bcrypt from 'bcryptjs'
 import { sql } from 'drizzle-orm'
 import { getCookie, setCookie } from 'hono/cookie'
 import { createFactory } from 'hono/factory'
 import { renderPage } from 'vike/server'
+import z from 'zod'
 
 const factory = createFactory()
 
-async function getCustomFeedURL(email: string): Promise<string | null> {
+async function getCustomFeedURL(email: string): Promise<{
+  customFeedURL: string | null
+  readLaterData: string | null
+} | null> {
   const user = await getUserByEmail(email)
 
   if (!userExists(user)) {
@@ -39,8 +46,9 @@ async function getCustomFeedURL(email: string): Promise<string | null> {
 
   if (isArray(result) && result.length > 0) {
     const customFeedURL = result?.length > 0 ? result[0]?.feedURL : null
+    const readLaterData = result?.length > 0 ? result[0]?.readLater : null
 
-    return customFeedURL
+    return { customFeedURL, readLaterData }
   }
 
   return null
@@ -50,7 +58,7 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
   const cookie = getCookie(c, 'token')
 
   const token = cookie && parseJwt(cookie)
-  const customFeedURL = token?.user ? await getCustomFeedURL(token.user) : null
+  const userFeedsData = token?.user ? await getCustomFeedURL(token.user) : null
 
   const pageContextInit = {
     urlOriginal: c.req.url,
@@ -60,7 +68,8 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
       user: token?.user || null,
     },
     userFeeds: {
-      customFeedURL,
+      customFeedURL: userFeedsData && userFeedsData?.customFeedURL,
+      readLaterData: userFeedsData && userFeedsData?.readLaterData,
     },
   }
 
@@ -78,18 +87,71 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
   return c.body(body)
 })
 
+const addReadLaterHandler = factory.createHandlers(async (c) => {
+  let validator
+  const req = await c.req.json<{ newsList: NewsCard[] | []; email: string }>()
+
+  if (isArray(req.newsList) && req.newsList.length > 0) {
+    validator = z.object({
+      newsList: z.array(
+        z.object({
+          excerpt: z.string(),
+          id: z.string(),
+          media: z.object({
+            thumbnail: z.string(),
+            alt: z.string(),
+          }),
+          publishedOn: z.string(),
+          title: z.string(),
+        }),
+      ),
+      email: z.string().email(),
+    })
+  } else {
+    validator = z.object({
+      newsList: z.null(),
+      email: z.string(),
+    })
+  }
+
+  const { data, error } = validator.safeParse(req)
+  assert(data, error)
+
+  const user = await getUserByEmail(data.email)
+  if (!userExists(user)) {
+    return c.json({ error: 'User does not exist' })
+  }
+
+  const readLater = data.newsList ? JSON.stringify(data.newsList) : null
+
+  await db
+    .insert(userFeedsTable)
+    .values({
+      id: user[0].id,
+      userID: user[0].id,
+      readLater,
+    })
+    .onConflictDoUpdate({
+      target: userFeedsTable.id,
+      set: { readLater },
+    })
+
+  return c.json({
+    success: 'News was successfully added to your Read leater list',
+  })
+})
+
 const addCustomFeedURLHandler = factory.createHandlers(async (c) => {
   const req = await c.req.json<{ email: string; url: string }>()
 
-  const rows = await getUserByEmail(req.email)
-
-  if (!userExists(rows)) {
+  const user = await getUserByEmail(req.email)
+  if (!userExists(user)) {
     return c.json({ error: 'User does not exist' })
   }
 
   await db
     .insert(userFeedsTable)
-    .values({ id: rows[0].id, userID: rows[0].id, feedURL: req.url })
+    .values({ id: user[0].id, userID: user[0].id, feedURL: req.url })
     .onConflictDoUpdate({
       target: userFeedsTable.id,
       set: { feedURL: req.url },
@@ -102,7 +164,6 @@ const loadCustomFeedURLHandler = factory.createHandlers(async (c) => {
   const req = await c.req.json<{ email: string }>()
 
   const user = await getUserByEmail(req.email)
-
   if (!userExists(user)) {
     return c.json({ error: 'User does not exist' })
   }

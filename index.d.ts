@@ -8,6 +8,7 @@ declare global {
       }
       userFeeds: {
         customFeedURL: string | null
+        readLaterData: string | null
       }
       urlClient: string
       // Refine type of pageContext.Page (it's `unknown` by default)

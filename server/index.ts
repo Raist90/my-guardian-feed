@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import { compress } from 'hono/compress'
 import {
   addCustomFeedURLHandler,
+  addReadLaterHandler,
   addUserHandler,
   authHandler,
   catchAllHandler,
@@ -33,6 +34,7 @@ app.post('/auth', ...authHandler)
 app.post('/add-user', ...addUserHandler)
 app.post('/add-custom-feed-url', ...addCustomFeedURLHandler)
 app.post('/load-custom-feed-url', ...loadCustomFeedURLHandler)
+app.post('/add-read-later', ...addReadLaterHandler)
 
 if (isProduction) {
   // eslint-disable-next-line no-console
