@@ -6,6 +6,7 @@ export {
   catchAllHandler,
   getTokenHandler,
   loadCustomFeedURLHandler,
+  router,
 }
 
 import {
@@ -17,15 +18,17 @@ import {
 } from '@/auth'
 import { db } from '@/db/client'
 import { userFeedsTable, usersTable } from '@/drizzle/schema'
-import { assert } from '@/helpers/assert'
 import { isArray } from '@/helpers/predicates'
-import { NewsCard } from '@/types'
+import { zValidator } from '@hono/zod-validator'
 import bcrypt from 'bcryptjs'
 import { sql } from 'drizzle-orm'
+import { Hono } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 import { createFactory } from 'hono/factory'
 import { renderPage } from 'vike/server'
-import z from 'zod'
+import { AddReadLaterHandlerSchema } from './schemas'
+
+const router = new Hono()
 
 const factory = createFactory()
 
@@ -87,59 +90,42 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
   return c.body(body)
 })
 
-const addReadLaterHandler = factory.createHandlers(async (c) => {
-  let validator
-  const req = await c.req.json<{ newsList: NewsCard[] | []; email: string }>()
+const addReadLaterHandler = router.post(
+  '/add-read-later',
+  zValidator('json', AddReadLaterHandlerSchema, async (result, c) => {
+    if (!result.success) {
+      return c.text(result.error.message, 400)
+    }
 
-  if (isArray(req.newsList) && req.newsList.length > 0) {
-    validator = z.object({
-      newsList: z.array(
-        z.object({
-          excerpt: z.string(),
-          id: z.string(),
-          media: z.object({
-            thumbnail: z.string(),
-            alt: z.string(),
-          }),
-          publishedOn: z.string(),
-          title: z.string(),
-        }),
-      ),
-      email: z.string().email(),
-    })
-  } else {
-    validator = z.object({
-      newsList: z.null(),
-      email: z.string(),
-    })
-  }
+    const { data } = result
 
-  const { data, error } = validator.safeParse(req)
-  assert(data, error)
+    const user = await getUserByEmail(data.email)
+    if (!userExists(user)) {
+      return c.json({ error: 'User does not exist' }, 500)
+    }
 
-  const user = await getUserByEmail(data.email)
-  if (!userExists(user)) {
-    return c.json({ error: 'User does not exist' })
-  }
+    const readLater = data.newsList ? JSON.stringify(data.newsList) : null
 
-  const readLater = data.newsList ? JSON.stringify(data.newsList) : null
+    await db
+      .insert(userFeedsTable)
+      .values({
+        id: user[0].id,
+        userID: user[0].id,
+        readLater,
+      })
+      .onConflictDoUpdate({
+        target: userFeedsTable.id,
+        set: { readLater },
+      })
 
-  await db
-    .insert(userFeedsTable)
-    .values({
-      id: user[0].id,
-      userID: user[0].id,
-      readLater,
-    })
-    .onConflictDoUpdate({
-      target: userFeedsTable.id,
-      set: { readLater },
-    })
-
-  return c.json({
-    success: 'News was successfully added to your Read later list',
-  })
-})
+    return c.json(
+      {
+        success: 'News was successfully added to your Read later list',
+      },
+      200,
+    )
+  }),
+)
 
 const addCustomFeedURLHandler = factory.createHandlers(async (c) => {
   const req = await c.req.json<{ email: string; url: string }>()

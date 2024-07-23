@@ -34,7 +34,8 @@ app.post('/auth', ...authHandler)
 app.post('/add-user', ...addUserHandler)
 app.post('/add-custom-feed-url', ...addCustomFeedURLHandler)
 app.post('/load-custom-feed-url', ...loadCustomFeedURLHandler)
-app.post('/add-read-later', ...addReadLaterHandler)
+const routes = app.route('/', addReadLaterHandler)
+export type AppType = typeof routes
 
 if (isProduction) {
   // eslint-disable-next-line no-console
