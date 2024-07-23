@@ -3,13 +3,13 @@ import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
 import { compress } from 'hono/compress'
 import {
-  addCustomFeedURLHandler,
   addUserHandler,
   authHandler,
   catchAllHandler,
   getTokenHandler,
   loadCustomFeedURLHandler,
 } from './handlers'
+import { addCustomFeedURLHandler } from './handlers/customFeed'
 import { addReadLaterHandler } from './handlers/readLater'
 
 const isProduction = import.meta.env.MODE === 'production'
@@ -32,9 +32,10 @@ app.get('*', ...catchAllHandler)
 app.post('/get-token', ...getTokenHandler)
 app.post('/auth', ...authHandler)
 app.post('/add-user', ...addUserHandler)
-app.post('/add-custom-feed-url', ...addCustomFeedURLHandler)
 app.post('/load-custom-feed-url', ...loadCustomFeedURLHandler)
-const routes = app.route('/', addReadLaterHandler)
+const routes = app
+  .route('/', addReadLaterHandler)
+  .route('/', addCustomFeedURLHandler)
 export type AppType = typeof routes
 
 if (isProduction) {

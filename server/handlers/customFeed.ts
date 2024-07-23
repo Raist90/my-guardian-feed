@@ -1,30 +1,29 @@
-export { addReadLaterHandler }
+export { addCustomFeedURLHandler }
 
 import { getUserByEmail, userExists } from '@/auth'
 import { db } from '@/db/client'
 import { userFeedsTable } from '@/drizzle/schema'
 import { zValidator } from '@hono/zod-validator'
-import type { ResultSet } from '@libsql/client'
+import { ResultSet } from '@libsql/client'
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { NewsListSchema } from './schemas'
-import type { User } from './types'
+import { User } from './types'
 
 /** @todo Move this elsewhere if reused across other handlers */
 const msgs = {
   USER_NOT_FOUND: 'User does not exist',
-  SUCCESS: 'News was successfully added to your Read later list',
+  SUCCESS: 'Feed URL added successfully',
 } as const
 
 const ReqSchema = z.object({
-  newsList: NewsListSchema,
   email: z.string(),
+  url: z.string(),
 })
 
 const router = new Hono()
 
-const addReadLaterHandler = router.post(
-  '/add-read-later',
+const addCustomFeedURLHandler = router.post(
+  '/add-custom-feed-url',
   zValidator('json', ReqSchema, async (result, c) => {
     if (!result.success) {
       return c.json({ error: result.error.message }, 500)
@@ -34,26 +33,21 @@ const addReadLaterHandler = router.post(
 
     const user = await getUserByEmail(req.email)
     if (!userExists(user)) {
-      return c.json({ error: msgs.USER_NOT_FOUND }, 500)
+      return c.json({ error: msgs.USER_NOT_FOUND })
     }
 
-    const readLater = req.newsList ? JSON.stringify(req.newsList) : null
-    await query(user, readLater)
+    await query(user, req.url)
 
-    return c.json({ success: msgs.SUCCESS }, 200)
+    return c.json({ success: msgs.SUCCESS })
   }),
 )
 
-async function query(user: User[], data: string | null): Promise<ResultSet> {
+async function query(user: User[], feedURL: string): Promise<ResultSet> {
   return await db
     .insert(userFeedsTable)
-    .values({
-      id: user[0].id,
-      userID: user[0].id,
-      readLater: data,
-    })
+    .values({ id: user[0].id, userID: user[0].id, feedURL })
     .onConflictDoUpdate({
       target: userFeedsTable.id,
-      set: { readLater: data },
+      set: { feedURL },
     })
 }

@@ -1,5 +1,4 @@
 export {
-  addCustomFeedURLHandler,
   addUserHandler,
   authHandler,
   catchAllHandler,
@@ -85,25 +84,6 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
   c.status(statusCode)
 
   return c.body(body)
-})
-
-const addCustomFeedURLHandler = factory.createHandlers(async (c) => {
-  const req = await c.req.json<{ email: string; url: string }>()
-
-  const user = await getUserByEmail(req.email)
-  if (!userExists(user)) {
-    return c.json({ error: 'User does not exist' })
-  }
-
-  await db
-    .insert(userFeedsTable)
-    .values({ id: user[0].id, userID: user[0].id, feedURL: req.url })
-    .onConflictDoUpdate({
-      target: userFeedsTable.id,
-      set: { feedURL: req.url },
-    })
-
-  return c.json({ success: 'Feed URL added successfully' })
 })
 
 const loadCustomFeedURLHandler = factory.createHandlers(async (c) => {
