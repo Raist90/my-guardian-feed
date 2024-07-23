@@ -4,13 +4,13 @@ import { Hono } from 'hono'
 import { compress } from 'hono/compress'
 import {
   addCustomFeedURLHandler,
-  addReadLaterHandler,
   addUserHandler,
   authHandler,
   catchAllHandler,
   getTokenHandler,
   loadCustomFeedURLHandler,
 } from './handlers'
+import { addReadLaterHandler } from './handlers/readLater'
 
 const isProduction = import.meta.env.MODE === 'production'
 const port = Number(import.meta.env.PORT) || 3000

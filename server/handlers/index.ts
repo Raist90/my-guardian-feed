@@ -1,6 +1,5 @@
 export {
   addCustomFeedURLHandler,
-  addReadLaterHandler,
   addUserHandler,
   authHandler,
   catchAllHandler,
@@ -19,14 +18,12 @@ import {
 import { db } from '@/db/client'
 import { userFeedsTable, usersTable } from '@/drizzle/schema'
 import { isArray } from '@/helpers/predicates'
-import { zValidator } from '@hono/zod-validator'
 import bcrypt from 'bcryptjs'
 import { sql } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 import { createFactory } from 'hono/factory'
 import { renderPage } from 'vike/server'
-import { AddReadLaterHandlerSchema } from './schemas'
 
 const router = new Hono()
 
@@ -89,43 +86,6 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
 
   return c.body(body)
 })
-
-const addReadLaterHandler = router.post(
-  '/add-read-later',
-  zValidator('json', AddReadLaterHandlerSchema, async (result, c) => {
-    if (!result.success) {
-      return c.text(result.error.message, 400)
-    }
-
-    const { data } = result
-
-    const user = await getUserByEmail(data.email)
-    if (!userExists(user)) {
-      return c.json({ error: 'User does not exist' }, 500)
-    }
-
-    const readLater = data.newsList ? JSON.stringify(data.newsList) : null
-
-    await db
-      .insert(userFeedsTable)
-      .values({
-        id: user[0].id,
-        userID: user[0].id,
-        readLater,
-      })
-      .onConflictDoUpdate({
-        target: userFeedsTable.id,
-        set: { readLater },
-      })
-
-    return c.json(
-      {
-        success: 'News was successfully added to your Read later list',
-      },
-      200,
-    )
-  }),
-)
 
 const addCustomFeedURLHandler = factory.createHandlers(async (c) => {
   const req = await c.req.json<{ email: string; url: string }>()
