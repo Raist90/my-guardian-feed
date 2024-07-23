@@ -4,7 +4,6 @@ export {
   catchAllHandler,
   getTokenHandler,
   loadCustomFeedURLHandler,
-  router,
 }
 
 import {
@@ -19,12 +18,9 @@ import { userFeedsTable, usersTable } from '@/drizzle/schema'
 import { isArray } from '@/helpers/predicates'
 import bcrypt from 'bcryptjs'
 import { sql } from 'drizzle-orm'
-import { Hono } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 import { createFactory } from 'hono/factory'
 import { renderPage } from 'vike/server'
-
-const router = new Hono()
 
 const factory = createFactory()
 
