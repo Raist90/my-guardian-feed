@@ -4,8 +4,10 @@ import { TOAST_TYPES } from '@/constants'
 import { assert } from '@/helpers/assert'
 import { isArray, isString } from '@/helpers/predicates'
 import { removeHTMLTags } from '@/helpers/removeHTMLTags'
+import type { AppType } from '@/index'
 import type { NewsCard, NewsCard as NewsCardType } from '@/types'
 import clsx from 'clsx'
+import { hc } from 'hono/client'
 import { Clock } from 'lucide-react'
 import React, { useState } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
@@ -18,6 +20,8 @@ type NewsCardProps = {
   readLaterData: string | null
   handleReadLaterDataUpdate: (data: string | null) => Promise<void>
 }
+
+const client = hc<AppType>(import.meta.env.BASE_URL)
 
 function NewsCard({
   handleReadLaterDataUpdate,
@@ -60,25 +64,17 @@ function NewsCard({
     let body: any
 
     if (readLaterData) {
-      /**
-       * @todo Maybe later export NewsCard schema from zod schemas file and use
-       *   it here to safeParse
-       */
       const readLaterParsed = JSON.parse(readLaterData) as NewsCard[]
       readLaterParsed.push(newsCard)
 
-      body = JSON.stringify({ newsList: readLaterParsed, email: user })
+      body = { newsList: readLaterParsed, email: user }
     } else {
-      body = JSON.stringify({ newsList: [newsCard], email: user })
+      body = { newsList: [newsCard], email: user }
     }
 
-    const res = await fetch('add-read-later', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-    })
+    const res = await client['add-read-later'].$post({ json: body })
 
-    const msg = await res.json()
+    const msg = (await res.json()) as { error: string } | { success: string }
 
     if ('error' in msg) {
       setToastProps({
@@ -91,8 +87,7 @@ function NewsCard({
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      const parsedReq = JSON.parse(body).newsList
-      handleReadLaterDataUpdate(JSON.stringify(parsedReq))
+      handleReadLaterDataUpdate(JSON.stringify(body.newsList))
     }
     setIsOpen(true)
     setIsLoading(false)
@@ -118,18 +113,14 @@ function NewsCard({
         ? filteredReadLaterParse
         : null
 
-    const body = JSON.stringify({
+    const body = {
       newsList,
       email: user,
-    })
+    }
 
-    const res = await fetch('add-read-later', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-    })
+    const res = await client['add-read-later'].$post({ json: body })
 
-    const msg = await res.json()
+    const msg = (await res.json()) as { error: string } | { success: string }
 
     if ('error' in msg) {
       setToastProps({
@@ -142,8 +133,11 @@ function NewsCard({
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      const parsedReq = JSON.parse(body).newsList
-      handleReadLaterDataUpdate(JSON.stringify(parsedReq))
+      handleReadLaterDataUpdate(
+        isArray(body.newsList) && body.newsList?.length
+          ? JSON.stringify(body.newsList)
+          : null,
+      )
     }
     setIsOpen(true)
     setIsLoading(false)
