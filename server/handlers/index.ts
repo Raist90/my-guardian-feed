@@ -1,10 +1,4 @@
-export {
-  addUserHandler,
-  authHandler,
-  catchAllHandler,
-  getTokenHandler,
-  loadCustomFeedURLHandler,
-}
+export { addUserHandler, authHandler, catchAllHandler, getTokenHandler }
 
 import {
   checkUserPass,
@@ -80,28 +74,6 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
   c.status(statusCode)
 
   return c.body(body)
-})
-
-const loadCustomFeedURLHandler = factory.createHandlers(async (c) => {
-  const req = await c.req.json<{ email: string }>()
-
-  const user = await getUserByEmail(req.email)
-  if (!userExists(user)) {
-    return c.json({ error: 'User does not exist' })
-  }
-
-  const result = await db
-    .select()
-    .from(userFeedsTable)
-    .where(sql`${userFeedsTable.userID} = ${user[0].id}`)
-
-  const customFeedURL = result?.length > 0 ? result[0]?.feedURL : null
-
-  if (!customFeedURL) {
-    return c.json({ error: 'Feed URL does not exist' })
-  }
-
-  return c.json({ customFeedURL })
 })
 
 const addUserHandler = factory.createHandlers(async (c) => {

@@ -4,10 +4,10 @@ import { getUserByEmail, userExists } from '@/auth'
 import { db } from '@/db/client'
 import { userFeedsTable } from '@/drizzle/schema'
 import { zValidator } from '@hono/zod-validator'
-import { ResultSet } from '@libsql/client'
+import type { ResultSet } from '@libsql/client'
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { User } from './types'
+import type { User } from '../types'
 
 /** @todo Move this elsewhere if reused across other handlers */
 const msgs = {

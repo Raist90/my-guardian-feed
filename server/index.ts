@@ -7,9 +7,11 @@ import {
   authHandler,
   catchAllHandler,
   getTokenHandler,
-  loadCustomFeedURLHandler,
 } from './handlers'
-import { addCustomFeedURLHandler } from './handlers/customFeed'
+import {
+  addCustomFeedURLHandler,
+  loadCustomFeedURLHandler,
+} from './handlers/customFeed'
 import { addReadLaterHandler } from './handlers/readLater'
 
 const isProduction = import.meta.env.MODE === 'production'
@@ -32,10 +34,15 @@ app.get('*', ...catchAllHandler)
 app.post('/get-token', ...getTokenHandler)
 app.post('/auth', ...authHandler)
 app.post('/add-user', ...addUserHandler)
-app.post('/load-custom-feed-url', ...loadCustomFeedURLHandler)
+
+/**
+ * @todo Merge addCustomFeedURLHandler and loadCustomFeedURLHandler in the same
+ *   route and also check implementation
+ */
 const routes = app
   .route('/', addReadLaterHandler)
   .route('/', addCustomFeedURLHandler)
+  .route('/', loadCustomFeedURLHandler)
 export type AppType = typeof routes
 
 if (isProduction) {
