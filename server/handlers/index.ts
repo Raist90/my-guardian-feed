@@ -1,17 +1,15 @@
-export { authHandler, catchAllHandler, getTokenHandler }
+export { authHandler } from './auth'
+export { addCustomFeedURLHandler, loadCustomFeedURLHandler } from './customFeed'
+export { addReadLaterHandler } from './readLater'
+export { addUserHandler } from './user'
+export { catchAllHandler, getTokenHandler }
 
-import {
-  checkUserPass,
-  generateToken,
-  getUserByEmail,
-  parseJwt,
-  userExists,
-} from '@/auth'
+import { getUserByEmail, parseJwt, userExists } from '@/auth'
 import { db } from '@/db/client'
 import { userFeedsTable } from '@/drizzle/schema'
 import { isArray } from '@/helpers/predicates'
 import { sql } from 'drizzle-orm'
-import { getCookie, setCookie } from 'hono/cookie'
+import { getCookie } from 'hono/cookie'
 import { createFactory } from 'hono/factory'
 import { renderPage } from 'vike/server'
 
@@ -75,34 +73,10 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
   return c.body(body)
 })
 
-const authHandler = factory.createHandlers(async (c) => {
-  const req = await c.req.json<{ email: string; password: string }>()
-  const rows = await getUserByEmail(req.email)
-
-  if (!userExists(rows)) {
-    const payload = { error: `User with email "${req.email}" not found.` }
-    return c.json(payload)
-  }
-
-  const isValidPass = await checkUserPass(
-    req.password,
-    rows[0].password as string,
-  )
-
-  if (!isValidPass) {
-    const payload = { error: `Password for user "${req.email}" is invalid.` }
-    return c.json(payload)
-  }
-
-  const token = await generateToken(req.email)
-
-  /** @todo Make sure to rename this one */
-  setCookie(c, 'token', JSON.stringify(token))
-
-  const payload = { success: 'Successfully logged in!' }
-  return c.json(payload)
-})
-
+/**
+ * @todo I think we don't need this but I will leave it here for now just in
+ *   case. Anyway, this should be a GET request, not POST
+ */
 const getTokenHandler = factory.createHandlers(async (c) => {
   const cookie = getCookie(c, 'token')
 
