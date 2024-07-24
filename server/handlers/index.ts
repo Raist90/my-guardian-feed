@@ -1,4 +1,4 @@
-export { addUserHandler, authHandler, catchAllHandler, getTokenHandler }
+export { authHandler, catchAllHandler, getTokenHandler }
 
 import {
   checkUserPass,
@@ -8,9 +8,8 @@ import {
   userExists,
 } from '@/auth'
 import { db } from '@/db/client'
-import { userFeedsTable, usersTable } from '@/drizzle/schema'
+import { userFeedsTable } from '@/drizzle/schema'
 import { isArray } from '@/helpers/predicates'
-import bcrypt from 'bcryptjs'
 import { sql } from 'drizzle-orm'
 import { getCookie, setCookie } from 'hono/cookie'
 import { createFactory } from 'hono/factory'
@@ -74,30 +73,6 @@ const catchAllHandler = factory.createHandlers(async (c, next) => {
   c.status(statusCode)
 
   return c.body(body)
-})
-
-const addUserHandler = factory.createHandlers(async (c) => {
-  const req = await c.req.json<{ email: string; password: string }>()
-  const rows = await getUserByEmail(req.email)
-
-  if (userExists(rows)) {
-    const payload = { error: `User with email ${req.email} already exists.` }
-    return c.json(payload)
-  }
-
-  const hashedPassword = await bcrypt.hash(req.password, 10)
-
-  const user = await db
-    .insert(usersTable)
-    .values({ email: req.email, password: hashedPassword })
-    .returning({ id: usersTable.id })
-
-  await db.insert(userFeedsTable).values({ id: user[0].id, userID: user[0].id })
-
-  const token = await generateToken(req.email)
-  setCookie(c, 'token', JSON.stringify(token))
-
-  return c.json({ success: 'User successfully added!' })
 })
 
 const authHandler = factory.createHandlers(async (c) => {

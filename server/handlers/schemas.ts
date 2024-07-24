@@ -1,4 +1,4 @@
-export { NewsListSchema }
+export { NewsListSchema, UserSchema }
 
 import { z } from 'zod'
 
@@ -17,3 +17,8 @@ const NewsListSchema = z.union([
   ),
   z.null(),
 ])
+
+const UserSchema = z.object({
+  email: z.string(),
+  password: z.string(),
+})

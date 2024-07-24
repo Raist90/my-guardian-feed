@@ -2,17 +2,13 @@ import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { Hono } from 'hono'
 import { compress } from 'hono/compress'
-import {
-  addUserHandler,
-  authHandler,
-  catchAllHandler,
-  getTokenHandler,
-} from './handlers'
+import { authHandler, catchAllHandler, getTokenHandler } from './handlers'
 import {
   addCustomFeedURLHandler,
   loadCustomFeedURLHandler,
 } from './handlers/customFeed'
 import { addReadLaterHandler } from './handlers/readLater'
+import { addUserHandler } from './handlers/user'
 
 const isProduction = import.meta.env.MODE === 'production'
 const port = Number(import.meta.env.PORT) || 3000
@@ -33,7 +29,6 @@ app.get('*', ...catchAllHandler)
 
 app.post('/get-token', ...getTokenHandler)
 app.post('/auth', ...authHandler)
-app.post('/add-user', ...addUserHandler)
 
 /**
  * @todo Merge addCustomFeedURLHandler and loadCustomFeedURLHandler in the same
@@ -43,6 +38,7 @@ const routes = app
   .route('/', addReadLaterHandler)
   .route('/', addCustomFeedURLHandler)
   .route('/', loadCustomFeedURLHandler)
+  .route('/', addUserHandler)
 export type AppType = typeof routes
 
 if (isProduction) {
