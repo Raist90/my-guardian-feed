@@ -1,5 +1,6 @@
 export { Feed }
 
+import { HOMEPAGE_ROUTE, SEARCH_ROUTE } from '@/constants'
 import { isString } from '@/helpers/predicates'
 import React from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
@@ -13,12 +14,18 @@ type FeedProps = {
 
 function Feed({ title, children, ...rest }: FeedProps) {
   const {
+    urlClient,
     userFeeds: { customFeedURL },
   } = usePageContext()
 
   const { className } = rest
 
-  const hasCustomFeed = !!customFeedURL
+  /**
+   * @todo Fix helper isHomepage or create a new one without throwing serverside
+   *   err to avoid err 500
+   */
+  const isHomepage = urlClient === HOMEPAGE_ROUTE || urlClient === SEARCH_ROUTE
+  const hasCustomFeed = !!customFeedURL && !!isHomepage
 
   return (
     <div
