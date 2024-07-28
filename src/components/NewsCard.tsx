@@ -49,9 +49,9 @@ function NewsCard({
 
   const isReadLater = isString(readLaterData)
     ? readLaterData.length > 0 &&
-    !!(JSON.parse(readLaterData) as NewsCard[])?.find(
-      (news) => news.id === newsCard.id,
-    )
+      !!(JSON.parse(readLaterData) as NewsCard[])?.find(
+        (news) => news.id === newsCard.id,
+      )
     : false
 
   /** @todo This is similar to handleRemoveReadLater. Try to do some refactor */

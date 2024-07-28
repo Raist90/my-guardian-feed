@@ -1,7 +1,6 @@
 import { isArray } from '@/helpers/predicates'
+import { useReadLater } from '@/hooks/useReadLater'
 import type { NewsCard as NewsCardType } from '@/types'
-import { useState } from 'react'
-import { usePageContext } from 'vike-react/usePageContext'
 import { NewsCard } from './NewsCard'
 
 export { Dashboard }
@@ -11,19 +10,12 @@ type DashboardProps = {
 }
 
 function Dashboard({ user }: DashboardProps) {
-  const {
-    userFeeds: { readLaterData: initialReadLaterData },
-  } = usePageContext()
-
-  const [newsCardList, setNewsCardList] = useState(initialReadLaterData)
+  const { readLaterData: initialReadLaterData, updateReadLaterData } =
+    useReadLater()
 
   const newsCardListParsed =
-    newsCardList && (JSON.parse(newsCardList) as NewsCardType[])
+    initialReadLaterData && (JSON.parse(initialReadLaterData) as NewsCardType[])
 
-  // this is used in order to trigger NewsCard re-render
-  const handleReadLaterDataUpdate = async (data: string | null) => {
-    setNewsCardList(data)
-  }
   return (
     <section className='p-4'>
       <div>
@@ -35,9 +27,9 @@ function Dashboard({ user }: DashboardProps) {
           {newsCardListParsed.map((newsCard) => (
             <NewsCard
               key={newsCard.id}
-              handleReadLaterDataUpdate={handleReadLaterDataUpdate}
+              handleReadLaterDataUpdate={updateReadLaterData}
               newsCard={newsCard}
-              readLaterData={newsCardList}
+              readLaterData={initialReadLaterData}
             />
           ))}
         </section>
