@@ -1,4 +1,5 @@
 export {
+  DASHBOARD_ROUTE,
   FEED_KEY,
   HARDCODED_SECTION_LIST,
   HOMEPAGE_ROUTE,
@@ -20,6 +21,7 @@ const HOMEPAGE_ROUTE = '/'
 const SEARCH_ROUTE = '/search'
 const PAGE_ROUTE_PREFIX = 'search?page='
 const SECTION_ROUTE_PREFIX = 'search?section='
+const DASHBOARD_ROUTE = '/dashboard'
 
 // TTLs in milliseconds
 const TEN_MINUTES = 600000

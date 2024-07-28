@@ -1,6 +1,6 @@
 export { NewsCard }
 
-import { TOAST_TYPES } from '@/constants'
+import { DASHBOARD_ROUTE, TOAST_TYPES } from '@/constants'
 import { assert } from '@/helpers/assert'
 import { isArray, isString } from '@/helpers/predicates'
 import { removeHTMLTags } from '@/helpers/removeHTMLTags'
@@ -18,13 +18,13 @@ import { Toast } from './Toast'
 type NewsCardProps = {
   newsCard: NewsCardType
   readLaterData: string | null
-  handleReadLaterDataUpdate: (data: string | null) => Promise<void>
+  updateReadLaterData: (data: string | null) => Promise<void>
 }
 
 const client = hc<AppType>(import.meta.env.BASE_URL)
 
 function NewsCard({
-  handleReadLaterDataUpdate,
+  updateReadLaterData,
   newsCard,
   readLaterData,
 }: NewsCardProps) {
@@ -45,14 +45,23 @@ function NewsCard({
 
   const {
     token: { session, user },
+    urlClient,
   } = usePageContext()
 
   const isReadLater = isString(readLaterData)
     ? readLaterData.length > 0 &&
-      !!(JSON.parse(readLaterData) as NewsCard[])?.find(
-        (news) => news.id === newsCard.id,
-      )
+    !!(JSON.parse(readLaterData) as NewsCard[])?.find(
+      (news) => news.id === newsCard.id,
+    )
     : false
+
+  /** @todo Here DASHBOARD_ROUTE will likely change in the future */
+  const isReadLaterFeed = urlClient === DASHBOARD_ROUTE
+  /**
+   * @todo Maybe I should rename this into something more specific to readLater
+   *   feed
+   */
+  const hide = !isReadLater && isReadLaterFeed
 
   /** @todo This is similar to handleRemoveReadLater. Try to do some refactor */
   const handleAddReadLater = async (): Promise<void> => {
@@ -87,7 +96,7 @@ function NewsCard({
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      handleReadLaterDataUpdate(JSON.stringify(body.newsList))
+      updateReadLaterData(JSON.stringify(body.newsList))
     }
     setIsOpen(true)
     setIsLoading(false)
@@ -133,7 +142,7 @@ function NewsCard({
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      handleReadLaterDataUpdate(
+      updateReadLaterData(
         isArray(body.newsList) && body.newsList?.length
           ? JSON.stringify(body.newsList)
           : null,
@@ -147,6 +156,8 @@ function NewsCard({
   const closeDialog = () => {
     setIsOpen(false)
   }
+
+  if (hide) return
 
   return (
     <div key={id} className='flex flex-col gap-4 p-4 md:flex-row'>
