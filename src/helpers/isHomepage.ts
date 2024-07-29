@@ -6,7 +6,7 @@ import { isBrowser } from './isBrowser'
 
 function isHomepage(currentUrl: string): boolean {
   const msg = NO_SERVERSIDE(isHomepage.name)
-  assert(isBrowser(), msg)
+  assert(isBrowser, msg)
 
   return currentUrl === HOMEPAGE_ROUTE || currentUrl === SEARCH_ROUTE
 }

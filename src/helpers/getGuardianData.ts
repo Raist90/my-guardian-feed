@@ -15,7 +15,7 @@ type Options = {
 
 async function getGuardianData(options: Options): Promise<GuardianAPIData> {
   const msg = NO_CLIENTSIDE(getGuardianData.name)
-  assert(!isBrowser(), msg)
+  assert(!isBrowser, msg)
 
   const { page, query, section } = options
   const sectionQuery = section ? `section=${section}&` : ``
@@ -33,7 +33,7 @@ async function getGuardianData(options: Options): Promise<GuardianAPIData> {
 
 async function getGuardianDataById(id: string): Promise<GuardianAPIDataByID> {
   const msg = NO_CLIENTSIDE(getGuardianData.name)
-  assert(!isBrowser(), msg)
+  assert(!isBrowser, msg)
 
   const guardianDataById = await fetchWithCache<GuardianAPIDataByID>(
     `${import.meta.env.GUARDIAN_API}/${id}?api-key=${import.meta.env.GUARDIAN_API_KEY}&show-fields=all&show-elements=all&show-tags=all`,

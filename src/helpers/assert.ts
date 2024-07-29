@@ -8,7 +8,7 @@ import { isDevelopment } from './isDevelopment'
 function assert(condition: unknown, msg?: unknown): asserts condition {
   if (condition) return
 
-  const typeOfLog = isBrowser() ? 'console' : 'server'
+  const typeOfLog = isBrowser ? 'console' : 'server'
   const defaultErrMsg = `Something went wrong. Check the ${typeOfLog} log for more information.`
 
   if (isDevelopment) {

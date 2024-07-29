@@ -1,5 +1,3 @@
 export { isBrowser }
 
-function isBrowser() {
-  return typeof window !== 'undefined'
-}
+const isBrowser = typeof window !== 'undefined'
