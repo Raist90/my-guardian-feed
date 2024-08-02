@@ -10,8 +10,8 @@ function Page() {
     userFeeds: { readLaterData },
   } = usePageContext()
 
-  const newsCardList = readLaterData
-    ? (JSON.parse(readLaterData) as NewsCard[])
+  const newsCardList: NewsCard[] = readLaterData
+    ? JSON.parse(readLaterData)
     : []
 
   return (
