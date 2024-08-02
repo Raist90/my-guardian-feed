@@ -21,7 +21,7 @@ const HOMEPAGE_ROUTE = '/'
 const SEARCH_ROUTE = '/search'
 const PAGE_ROUTE_PREFIX = 'search?page='
 const SECTION_ROUTE_PREFIX = 'search?section='
-const DASHBOARD_ROUTE = '/dashboard'
+const DASHBOARD_ROUTE = '/user/dashboard'
 
 // TTLs in milliseconds
 const TEN_MINUTES = 600000

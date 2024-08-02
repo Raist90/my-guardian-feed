@@ -1,6 +1,6 @@
 export { LoginForm }
 
-import { TOAST_TYPES } from '@/constants'
+import { DASHBOARD_ROUTE, TOAST_TYPES } from '@/constants'
 import React, { useState } from 'react'
 import { navigate } from 'vike/client/router'
 import { Button } from './Button'
@@ -42,7 +42,7 @@ function LoginForm() {
       return
     }
 
-    navigate('/dashboard')
+    navigate(DASHBOARD_ROUTE)
   }
 
   /** @todo Refactor this */

@@ -42,6 +42,13 @@ function NewsCard({
     msg: string
     type: Lowercase<keyof typeof TOAST_TYPES>
   }>({ msg: '', type: TOAST_TYPES['ERROR'] })
+  /**
+   * @todo We use this so that we can trigger a re-render inside closeDialog but
+   *   it's not an elegant solution. Double check it
+   */
+  const [updatedReadLaterData, setUpdatedReadLaterData] = useState<
+    string | null
+  >(null)
 
   const {
     token: { session, user },
@@ -142,7 +149,7 @@ function NewsCard({
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      updateReadLaterData(
+      setUpdatedReadLaterData(
         isArray(body.newsList) && body.newsList?.length
           ? JSON.stringify(body.newsList)
           : null,
@@ -152,9 +159,13 @@ function NewsCard({
     setIsLoading(false)
   }
 
-  /** @todo Refactor this */
   const closeDialog = () => {
     setIsOpen(false)
+
+    // we trigger a re-render here else Toast will not be shown
+    if (updatedReadLaterData) {
+      updateReadLaterData(updatedReadLaterData)
+    }
   }
 
   if (hide) return
@@ -173,6 +184,7 @@ function NewsCard({
           <h2 className='mb-1 text-xl hover:underline'>{title}</h2>
         </Link>
         <p className='mb-2 text-sm'>{removeHTMLTags(excerpt)}</p>
+        {/** @todo Refactor this into getPublishedDate or something like that */}
         <p className='text-xs'>Published on {publishedOn.split('T')[0]}</p>
 
         {session && (

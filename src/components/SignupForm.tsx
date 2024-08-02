@@ -1,4 +1,4 @@
-import { TOAST_TYPES } from '@/constants'
+import { DASHBOARD_ROUTE, TOAST_TYPES } from '@/constants'
 import { useState } from 'react'
 import { navigate } from 'vike/client/router'
 import { Button } from './Button'
@@ -41,7 +41,7 @@ function SignupForm() {
       })
       setIsOpen(true)
     } else {
-      navigate('/dashboard')
+      navigate(DASHBOARD_ROUTE)
     }
   }
 

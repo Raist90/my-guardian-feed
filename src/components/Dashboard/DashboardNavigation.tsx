@@ -46,7 +46,9 @@ function NavigationItem({ href, label }: NavigationItemProps) {
 
   return (
     <li className={clsx(isActive && 'bg-gray-700', 'btn-primary')}>
-      <Link href={href}>{label}</Link>
+      <Link intercept href={href}>
+        {label}
+      </Link>
     </li>
   )
 }

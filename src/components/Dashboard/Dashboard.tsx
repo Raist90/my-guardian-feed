@@ -15,7 +15,7 @@ const navigationItems: ComponentProps<typeof DashboardNavigation>['items'] = [
     label: 'Custom Feed',
   },
   {
-    href: '/dashboard',
+    href: '/user/dashboard',
     label: 'Read later list',
   },
 ]
