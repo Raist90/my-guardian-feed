@@ -1,5 +1,5 @@
 export type { GuardianAPIData, GuardianAPIDataByID } from './api'
-export type { News, NewsCard, NewsCardWithPages }
+export type { Navigation, News, NewsCard, NewsCardWithPages }
 
 type Tag = {
   id: string
@@ -37,4 +37,14 @@ type News = {
   tags: Tag[]
   title: string
   type: 'image' | 'video'
+}
+
+type NavigationItem = {
+  href: string
+  label: string
+}
+
+type Navigation = {
+  primary: NavigationItem[]
+  userNavigation: NavigationItem[]
 }
