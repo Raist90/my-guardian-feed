@@ -57,7 +57,7 @@ function generateKeyMovements<
     }
 
     case 'ArrowUp': {
-      e.preventDefault
+      e.preventDefault()
 
       if (isFirst) {
         lastElem.focus()
