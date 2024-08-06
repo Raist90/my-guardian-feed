@@ -174,8 +174,7 @@ function UserNavigation({
       {isOpen && (
         <nav
           ref={navRef}
-          id='userNav'
-          className='absolute right-0 mt-4 text-nowrap rounded-sm border border-gray-400 bg-black p-4'
+          className='absolute right-0 z-[1] mt-4 text-nowrap rounded-sm border border-gray-400 bg-black p-4'
         >
           <ul className='space-y-4'>
             {items.map((item) => {

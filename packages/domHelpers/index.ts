@@ -115,8 +115,14 @@ function generateKeyMovements<
       break
     }
 
-    default: {
+    // prevent space key to handle scroll
+    case ' ': {
       e.preventDefault()
+
+      break
+    }
+
+    default: {
       break
     }
   }
