@@ -7,6 +7,7 @@ import {
   getCurrentKeyTargetAsString,
   getNodeListFromReactRef,
 } from '@/domHelpers'
+import { assert } from '@/helpers/assert'
 import { useNavigation } from '@/hooks/useNavigation'
 import { ChevronDown, CircleUserRound } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
@@ -77,6 +78,9 @@ function UserNavigation({
   toggleNav,
   userName,
 }: UserNavigationProps) {
+  const errMsg = 'User name is required for UserNavigation component'
+  assert(userName, errMsg)
+
   const btnRef = useRef<HTMLButtonElement>(null)
   const navRef = useRef<HTMLElement>(null)
 
@@ -87,32 +91,20 @@ function UserNavigation({
     }
   }
 
-  useEffect(() => {
-    if (!isOpen) return
-
-    document.addEventListener('click', (e) => handleOutsideClick(e))
-
-    return () =>
-      document.removeEventListener('click', (e) => handleOutsideClick(e))
-  })
-
-  if (!userName) return
+  const toggle = async (): Promise<void> => {
+    toggleNav()
+  }
 
   const handleClick = async (): Promise<void> => {
     if (!isOpen) {
-      const toggle = async (): Promise<void> => {
-        toggleNav()
+      await toggle()
+
+      if (navRef.current) {
+        const nodeList = getNodeListFromReactRef(navRef, 'a')
+
+        const { firstElem } = getArrowFocusableElemsByActiveElemId(nodeList)
+        firstElem.focus({ focusVisible: true } as FocusOptions)
       }
-
-      await toggle().then(() => {
-        if (navRef.current) {
-          const nav = navRef.current
-          const els = nav.querySelectorAll('a')
-
-          const firstEl = els[0]!
-          firstEl?.focus({ focusVisible: true } as FocusOptions)
-        }
-      })
     } else {
       toggleNav()
     }
@@ -122,18 +114,12 @@ function UserNavigation({
     if (!isOpen && e.key === 'ArrowDown') {
       e.preventDefault()
 
-      const toggle = async (): Promise<void> => {
-        toggleNav()
-      }
+      await toggle()
 
-      await toggle().then(() => {
-        if (navRef.current) {
-          const nodeList = getNodeListFromReactRef(navRef, 'a')
+      const nodeList = getNodeListFromReactRef(navRef, 'a')
 
-          const { firstElem } = getArrowFocusableElemsByActiveElemId(nodeList)
-          firstElem?.focus()
-        }
-      })
+      const { firstElem } = getArrowFocusableElemsByActiveElemId(nodeList)
+      firstElem.focus()
     }
   }
 
@@ -157,6 +143,15 @@ function UserNavigation({
       })
     }
   }
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    document.addEventListener('click', (e) => handleOutsideClick(e))
+
+    return () =>
+      document.removeEventListener('click', (e) => handleOutsideClick(e))
+  })
 
   return (
     <div className='relative'>

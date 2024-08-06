@@ -16,16 +16,17 @@ import { assert } from '@/helpers/assert'
  * @example
  *   const idx = findIndexByArrayField('foo', [{ foo: 'foo' }], 'foo')
  *
- * @param el - The element to find
+ * @param elem - The element to find
  * @param arr - The array of objects to search
  * @param field - The field to match
  */
 function findIndexByArrayField<A extends Record<string, unknown>>(
-  el: string,
+  elem: string,
   arr: A[],
   field: keyof A,
 ): number {
-  return arr.findIndex((i) => i[field] === el)
+  const isEqualTo = (obj: A) => obj[field] === elem
+  return arr.findIndex(isEqualTo)
 }
 
 /**
@@ -158,12 +159,12 @@ function getArrowFocusableElemsByActiveElemId<E extends HTMLElement>(
  * @example
  *   const key = getCurrentKeyTargetAsString(e)
  */
-function getCurrentKeyTargetAsString(e: React.KeyboardEvent): string {
-  const el = e.currentTarget.textContent
+function getCurrentKeyTargetAsString(event: React.KeyboardEvent): string {
+  const elem = event.currentTarget.textContent
   const errMsg = 'Element not found'
-  assert(el, errMsg)
+  assert(elem, errMsg)
 
-  return el
+  return elem
 }
 
 /**
@@ -172,18 +173,18 @@ function getCurrentKeyTargetAsString(e: React.KeyboardEvent): string {
  * @example
  *   const nodeList = getNodeListFromReactRef(ref, 'button')
  *
- * @param el - The React ref object
+ * @param elem - The React ref object
  * @param selector - The selector to match
  */
 function getNodeListFromReactRef<
   E extends HTMLElement,
   S extends keyof HTMLElementTagNameMap,
->(el: React.RefObject<E>, selector: S): NodeListOf<HTMLElementTagNameMap[S]> {
-  const htmlEl = el.current
+>(elem: React.RefObject<E>, selector: S): NodeListOf<HTMLElementTagNameMap[S]> {
+  const htmlElem = elem.current
   const errMsg = 'Element not found'
-  assert(htmlEl, errMsg)
+  assert(htmlElem, errMsg)
 
-  return htmlEl.querySelectorAll(selector)
+  return htmlElem.querySelectorAll(selector)
 }
 
 function isFirstFocusable(idx: number): boolean {
