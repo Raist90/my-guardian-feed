@@ -1,5 +1,12 @@
 export { Navigation }
 
+import {
+  findIndexByArrayField,
+  generateKeyMovements,
+  getArrowFocusableElemsByActiveElemId,
+  getCurrentKeyTargetAsString,
+  getNodeListFromReactRef,
+} from '@/domHelpers'
 import { useNavigation } from '@/hooks/useNavigation'
 import { ChevronDown, CircleUserRound } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
@@ -121,11 +128,10 @@ function UserNavigation({
 
       await toggle().then(() => {
         if (navRef.current) {
-          const nav = navRef.current
-          const els = nav.querySelectorAll('a')
+          const nodeList = getNodeListFromReactRef(navRef, 'a')
 
-          const firstEl = els[0]
-          firstEl?.focus()
+          const { firstElem } = getArrowFocusableElemsByActiveElemId(nodeList)
+          firstElem?.focus()
         }
       })
     }
@@ -133,65 +139,22 @@ function UserNavigation({
 
   const handleNavKeyDown = (e: React.KeyboardEvent): void => {
     if (isOpen) {
-      const currentEl = e.currentTarget.textContent!
-      const currentId = items.findIndex((el) => el.label === currentEl)
-      const firstIdx = 0
-      const lastIdx = items.length - 1
-      const isLastIdx = currentId === lastIdx
-      const isFirstIdx = currentId === firstIdx
+      const currentActiveElem = getCurrentKeyTargetAsString(e)
+      const currentActiveElemIdx = findIndexByArrayField(
+        currentActiveElem,
+        items,
+        'label',
+      )
 
-      const nav = navRef.current!
-      const els = nav.querySelectorAll('a')
-      const firstEl = els[0]
-      const nextEl = currentId + 1
-      const prevEl = currentId - 1
+      const nodeList = getNodeListFromReactRef(navRef, 'a')
 
-      switch (e.key) {
-        case 'ArrowDown': {
-          e.preventDefault()
-
-          if (isLastIdx) {
-            firstEl.focus()
-          } else {
-            els[nextEl].focus()
-          }
-
-          break
-        }
-
-        case 'ArrowUp': {
-          e.preventDefault()
-
-          if (isFirstIdx) {
-            els[lastIdx].focus()
-            return
-          } else {
-            els[prevEl].focus()
-          }
-
-          break
-        }
-
-        case 'Tab': {
-          e.preventDefault()
-
-          toggleNav()
-
-          break
-        }
-
-        case 'Escape': {
-          e.preventDefault()
-
-          toggleNav()
-          btnRef.current!.focus()
-
-          break
-        }
-
-        default:
-          break
-      }
+      generateKeyMovements(e, {
+        arr: items,
+        currentActiveElemIdx,
+        dialogButton: btnRef.current!,
+        handler: toggleNav,
+        nodeList,
+      })
     }
   }
 
