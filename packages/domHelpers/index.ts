@@ -10,6 +10,16 @@ export {
 
 import { assert } from '@/helpers/assert'
 
+/**
+ * Find the index of an element in an array of objects by a specific field
+ *
+ * @example
+ *   const idx = findIndexByArrayField('foo', [{ foo: 'foo' }], 'foo')
+ *
+ * @param el - The element to find
+ * @param arr - The array of objects to search
+ * @param field - The field to match
+ */
 function findIndexByArrayField<A extends Record<string, unknown>>(
   el: string,
   arr: A[],
@@ -18,6 +28,26 @@ function findIndexByArrayField<A extends Record<string, unknown>>(
   return arr.findIndex((i) => i[field] === el)
 }
 
+/**
+ * Activate navigation with arrow keys inside `dropdowns` and `dialogs`
+ *
+ * @example
+ *   generateKeyMovements(e, {
+ *     arr,
+ *     currentActiveElemIdx,
+ *     dialogButton,
+ *     handler,
+ *     nodeList,
+ *   })
+ *
+ * @param e - The React.KeyboardEvent event
+ * @param arr - The Array of objects to match with `nodeList`
+ * @param currentActiveElemIdx - Index of the current focused element
+ * @param dialogButton - The button which controls the dialog rendering and
+ *   which take focus when `Escape` key gets pressed
+ * @param handler - The handler which toggles the dialog appearence
+ * @param nodeList - Node list of focusable elements
+ */
 function generateKeyMovements<
   A extends Record<string, unknown>,
   E extends HTMLElement,
@@ -92,6 +122,15 @@ function generateKeyMovements<
   }
 }
 
+/**
+ * Get the focusable elements by the active element id.
+ *
+ * @example
+ *   const elems = getArrowFocusableElemsByActiveElemId(nodeList)
+ *
+ * @param node - The node list of focusable elements
+ * @param activeElem - The index of the active element
+ */
 function getArrowFocusableElemsByActiveElemId<E extends HTMLElement>(
   node: NodeListOf<E>,
   activeElem?: number,
@@ -107,6 +146,12 @@ function getArrowFocusableElemsByActiveElemId<E extends HTMLElement>(
   return elems
 }
 
+/**
+ * Get the current keyboard event target as a string
+ *
+ * @example
+ *   const key = getCurrentKeyTargetAsString(e)
+ */
 function getCurrentKeyTargetAsString(e: React.KeyboardEvent): string {
   const el = e.currentTarget.textContent
   const errMsg = 'Element not found'
@@ -115,6 +160,15 @@ function getCurrentKeyTargetAsString(e: React.KeyboardEvent): string {
   return el
 }
 
+/**
+ * Generates a node list from a React ref
+ *
+ * @example
+ *   const nodeList = getNodeListFromReactRef(ref, 'button')
+ *
+ * @param el - The React ref object
+ * @param selector - The selector to match
+ */
 function getNodeListFromReactRef<
   E extends HTMLElement,
   S extends keyof HTMLElementTagNameMap,
