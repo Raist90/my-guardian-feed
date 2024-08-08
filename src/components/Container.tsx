@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { createElement } from 'react'
+import React, { createElement } from 'react'
 
 export { Container }
 
@@ -30,6 +30,7 @@ function Container({
       className: clsx(
         centered && 'mx-auto xl:w-8/12',
         fullScreen && 'w-full',
+        /** @todo I think p-4 here is a little bit dumb, fix it */
         className ? className : 'p-4',
       ),
     },
