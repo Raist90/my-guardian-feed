@@ -1,24 +1,35 @@
 export { DropdownItems }
 
+import clsx from 'clsx'
 import React from 'react'
 
 type DropdownItemsProps = {
-  /** @todo Rename this to handleOnKeyDown */
-  handleNavKeyDown: (e: React.KeyboardEvent) => void
+  handleOnKeyDown: (e: React.KeyboardEvent) => void
   items: {
     href: string
     label: string
   }[]
 }
 
-function DropdownItems({ handleNavKeyDown, items }: DropdownItemsProps) {
+function DropdownItems({ handleOnKeyDown, items }: DropdownItemsProps) {
   return (
-    <ul className='space-y-4'>
-      {items.map((item) => {
+    <ul>
+      {items.map((item, idx) => {
         const { href, label } = item
+        const isFirst = idx === 0
         return (
-          <li onKeyDown={(e) => handleNavKeyDown(e)} key={label}>
-            <a href={href}>{label}</a>
+          <li
+            className={clsx(isFirst ? 'p-2 pb-0' : 'p-2')}
+            onKeyDown={(e) => handleOnKeyDown(e)}
+            key={label}
+          >
+            <a
+              className='block w-full p-2 focus:bg-gray-800 focus:outline-none'
+              rel='external'
+              href={href}
+            >
+              {label}
+            </a>
           </li>
         )
       })}
