@@ -12,6 +12,12 @@ type DropdownItemsProps = {
 }
 
 function DropdownItems({ handleOnKeyDown, items }: DropdownItemsProps) {
+  const handleOnMouseOver = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
+    e.currentTarget.focus()
+  }
+
   return (
     <ul>
       {items.map((item, idx) => {
@@ -24,6 +30,7 @@ function DropdownItems({ handleOnKeyDown, items }: DropdownItemsProps) {
             key={label}
           >
             <a
+              onMouseOver={(e) => handleOnMouseOver(e)}
               className='block w-full p-2 focus:bg-gray-800 focus:outline-none'
               rel='external'
               href={href}

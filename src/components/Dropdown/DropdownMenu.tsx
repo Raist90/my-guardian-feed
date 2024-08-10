@@ -28,6 +28,10 @@ const DropdownMenu = forwardRef(function DropdownMenu(
     }
   }
 
+  /**
+   * @todo I think here we need to focus first element or element which href is
+   *   equal to current URL
+   */
   useEffect(() => {
     if (navRef.current) {
       const nodeList = getNodeListFromReactRef(navRef, 'a')
