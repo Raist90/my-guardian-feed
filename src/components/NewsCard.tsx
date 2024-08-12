@@ -1,9 +1,10 @@
 export { NewsCard }
 
-import { DASHBOARD_ROUTE, TOAST_TYPES } from '@/constants'
+import { READ_LATER_ROUTE, TOAST_TYPES } from '@/constants'
 import { assert } from '@/helpers/assert'
 import { isArray, isString } from '@/helpers/predicates'
 import { removeHTMLTags } from '@/helpers/removeHTMLTags'
+import { useToast } from '@/hooks/useToast'
 import type { AppType } from '@/index'
 import type { NewsCard, NewsCard as NewsCardType } from '@/types'
 import clsx from 'clsx'
@@ -18,6 +19,7 @@ import { Toast } from './Toast'
 type NewsCardProps = {
   newsCard: NewsCardType
   readLaterData: string | null
+  /** This is used to trigger a re-render of the parent component */
   updateReadLaterData: (data: string | null) => Promise<void>
 }
 
@@ -36,19 +38,12 @@ function NewsCard({
     title,
   } = newsCard
 
+  const { isOpen, toggleToast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const [isOpen, setIsOpen] = useState<boolean>(false)
   const [toastProps, setToastProps] = useState<{
     msg: string
     type: Lowercase<keyof typeof TOAST_TYPES>
   }>({ msg: '', type: TOAST_TYPES['ERROR'] })
-  /**
-   * @todo We use this so that we can trigger a re-render inside closeDialog but
-   *   it's not an elegant solution. Double check it
-   */
-  const [updatedReadLaterData, setUpdatedReadLaterData] = useState<
-    string | null
-  >(null)
 
   const {
     token: { session, user },
@@ -62,22 +57,19 @@ function NewsCard({
     )
     : false
 
-  /** @todo Here DASHBOARD_ROUTE will likely change in the future */
-  const isReadLaterFeed = urlClient === DASHBOARD_ROUTE
+  const isReadLaterFeed = urlClient === READ_LATER_ROUTE
   /**
    * @todo Maybe I should rename this into something more specific to readLater
    *   feed
    */
-  const hide = !isReadLater && isReadLaterFeed
+  const hideFromReadLaterFeed = !isReadLater && isReadLaterFeed
 
   /** @todo This is similar to handleRemoveReadLater. Try to do some refactor */
   const handleAddReadLater = async (): Promise<void> => {
     setIsLoading(true)
-    setIsOpen(false)
 
     assert(user, 'User must be logged in to add news to read later list')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let body: any
+    let body
 
     if (readLaterData) {
       const readLaterParsed = JSON.parse(readLaterData) as NewsCard[]
@@ -105,13 +97,12 @@ function NewsCard({
 
       updateReadLaterData(JSON.stringify(body.newsList))
     }
-    setIsOpen(true)
+    toggleToast()
     setIsLoading(false)
   }
 
   const handleRemoveReadLater = async (): Promise<void> => {
     setIsLoading(true)
-    setIsOpen(false)
 
     assert(user, 'User must be logged in to remove news from read later list')
     assert(
@@ -149,26 +140,13 @@ function NewsCard({
         type: TOAST_TYPES['SUCCESS'],
       })
 
-      setUpdatedReadLaterData(
-        isArray(body.newsList) && body.newsList?.length
-          ? JSON.stringify(body.newsList)
-          : null,
-      )
+      updateReadLaterData(JSON.stringify(body.newsList))
     }
-    setIsOpen(true)
+    toggleToast()
     setIsLoading(false)
   }
 
-  const closeDialog = () => {
-    setIsOpen(false)
-
-    // we trigger a re-render here else Toast will not be shown
-    if (updatedReadLaterData) {
-      updateReadLaterData(updatedReadLaterData)
-    }
-  }
-
-  if (hide) return
+  if (hideFromReadLaterFeed) return
 
   return (
     <div key={id} className='flex flex-col gap-4 p-4 md:flex-row'>
@@ -209,7 +187,7 @@ function NewsCard({
 
       <Toast
         isOpen={isOpen}
-        closeDialog={closeDialog}
+        closeDialog={toggleToast}
         message={toastProps?.msg || ''}
         type={toastProps?.type || 'error'}
       />
