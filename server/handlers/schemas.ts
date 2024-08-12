@@ -19,6 +19,6 @@ const NewsListSchema = z.union([
 ])
 
 const UserSchema = z.object({
-  email: z.string(),
+  email: z.string().email(),
   password: z.string(),
 })
