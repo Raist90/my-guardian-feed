@@ -1,6 +1,6 @@
 export { NewsCard }
 
-import { READ_LATER_ROUTE, TOAST_TYPES } from '@/constants'
+import { READ_LATER_ROUTE } from '@/constants'
 import { assert } from '@/helpers/assert'
 import { isArray, isString } from '@/helpers/predicates'
 import { removeHTMLTags } from '@/helpers/removeHTMLTags'
@@ -38,12 +38,8 @@ function NewsCard({
     title,
   } = newsCard
 
-  const { isOpen, toggleToast } = useToast()
+  const { isOpen, toggleToast, toastProps, setToastProps } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const [toastProps, setToastProps] = useState<{
-    msg: string
-    type: Lowercase<keyof typeof TOAST_TYPES>
-  }>({ msg: '', type: TOAST_TYPES['ERROR'] })
 
   const {
     token: { session, user },
@@ -52,16 +48,12 @@ function NewsCard({
 
   const isReadLater = isString(readLaterData)
     ? readLaterData.length > 0 &&
-    !!(JSON.parse(readLaterData) as NewsCard[])?.find(
-      (news) => news.id === newsCard.id,
-    )
+      !!(JSON.parse(readLaterData) as NewsCard[])?.find(
+        (news) => news.id === newsCard.id,
+      )
     : false
 
   const isReadLaterFeed = urlClient === READ_LATER_ROUTE
-  /**
-   * @todo Maybe I should rename this into something more specific to readLater
-   *   feed
-   */
   const hideFromReadLaterFeed = !isReadLater && isReadLaterFeed
 
   /** @todo This is similar to handleRemoveReadLater. Try to do some refactor */
@@ -86,13 +78,13 @@ function NewsCard({
 
     if ('error' in msg) {
       setToastProps({
-        msg: msg.error,
-        type: TOAST_TYPES['ERROR'],
+        message: msg.error,
+        type: 'error',
       })
     } else {
       setToastProps({
-        msg: msg.success,
-        type: TOAST_TYPES['SUCCESS'],
+        message: msg.success,
+        type: 'success',
       })
 
       updateReadLaterData(JSON.stringify(body.newsList))
@@ -131,13 +123,13 @@ function NewsCard({
 
     if ('error' in msg) {
       setToastProps({
-        msg: 'Error removing news from Read later list',
-        type: TOAST_TYPES['ERROR'],
+        message: 'Error removing news from Read later list',
+        type: 'error',
       })
     } else {
       setToastProps({
-        msg: 'News successfully removed from Read later list',
-        type: TOAST_TYPES['SUCCESS'],
+        message: 'News successfully removed from Read later list',
+        type: 'success',
       })
 
       updateReadLaterData(JSON.stringify(body.newsList))
@@ -146,51 +138,53 @@ function NewsCard({
     setIsLoading(false)
   }
 
-  if (hideFromReadLaterFeed) return
-
   return (
-    <div key={id} className='flex flex-col gap-4 p-4 md:flex-row'>
-      <div className='relative aspect-video max-h-[200px] md:h-[100px]'>
-        <img
-          className='absolute h-full w-full object-cover'
-          src={thumbnail}
-          alt={alt}
-        />
-      </div>
-      <div>
-        <Link href={`news/${id}`}>
-          <h2 className='mb-1 text-xl hover:underline'>{title}</h2>
-        </Link>
-        <p className='mb-2 text-sm'>{removeHTMLTags(excerpt)}</p>
-        {/** @todo Refactor this into getPublishedDate or something like that */}
-        <p className='text-xs'>Published on {publishedOn.split('T')[0]}</p>
+    <>
+      {!hideFromReadLaterFeed && (
+        <div key={id} className={'flex flex-col gap-4 p-4 md:flex-row'}>
+          <div className='relative aspect-video max-h-[200px] md:h-[100px]'>
+            <img
+              className='absolute h-full w-full object-cover'
+              src={thumbnail}
+              alt={alt}
+            />
+          </div>
+          <div>
+            <Link href={`news/${id}`}>
+              <h2 className='mb-1 text-xl hover:underline'>{title}</h2>
+            </Link>
+            <p className='mb-2 text-sm'>{removeHTMLTags(excerpt)}</p>
+            {/** @todo Refactor this into getPublishedDate or something like that */}
+            <p className='text-xs'>Published on {publishedOn.split('T')[0]}</p>
 
-        {session && (
-          <section className='mt-4 items-center text-xs'>
-            <Button
-              handler={
-                !isReadLater ? handleAddReadLater : handleRemoveReadLater
-              }
-              className={clsx(
-                isReadLater && 'bg-gray-700',
-                'inline-flex gap-2',
-              )}
-              type='button'
-              isDisabled={isLoading}
-            >
-              <Clock size='14' />
-              {!isReadLater ? 'Read later' : 'Remove from list'}
-            </Button>
-          </section>
-        )}
-      </div>
+            {session && (
+              <section className='mt-4 items-center text-xs'>
+                <Button
+                  handler={
+                    !isReadLater ? handleAddReadLater : handleRemoveReadLater
+                  }
+                  className={clsx(
+                    isReadLater && 'bg-gray-700',
+                    'inline-flex gap-2',
+                  )}
+                  type='button'
+                  isDisabled={isLoading}
+                >
+                  <Clock size='14' />
+                  {!isReadLater ? 'Read later' : 'Remove from list'}
+                </Button>
+              </section>
+            )}
+          </div>
+        </div>
+      )}
 
       <Toast
         isOpen={isOpen}
         closeDialog={toggleToast}
-        message={toastProps?.msg || ''}
-        type={toastProps?.type || 'error'}
+        message={toastProps.message}
+        type={toastProps.type}
       />
-    </div>
+    </>
   )
 }
