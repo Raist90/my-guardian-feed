@@ -2,13 +2,16 @@ export { NewsCard }
 
 import { READ_LATER_ROUTE } from '@/constants'
 import { assert } from '@/helpers/assert'
-import { isArray, isString } from '@/helpers/predicates'
+import { isString } from '@/helpers/predicates'
 import { removeHTMLTags } from '@/helpers/removeHTMLTags'
 import { useToast } from '@/hooks/useToast'
-import type { AppType } from '@/index'
+import {
+  addNewsToReadList,
+  executeReadLaterMutation,
+  removeNewsFromReadList,
+} from '@/mutations/readLater'
 import type { NewsCard, NewsCard as NewsCardType } from '@/types'
 import clsx from 'clsx'
-import { hc } from 'hono/client'
 import { Clock } from 'lucide-react'
 import React, { useState } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
@@ -22,8 +25,6 @@ type NewsCardProps = {
   /** This is used to trigger a re-render of the parent component */
   updateReadLaterData: (data: string | null) => Promise<void>
 }
-
-const client = hc<AppType>(import.meta.env.BASE_URL)
 
 function NewsCard({
   updateReadLaterData,
@@ -56,39 +57,18 @@ function NewsCard({
   const isReadLaterFeed = urlClient === READ_LATER_ROUTE
   const hideFromReadLaterFeed = !isReadLater && isReadLaterFeed
 
-  /** @todo This is similar to handleRemoveReadLater. Try to do some refactor */
   const handleAddReadLater = async (): Promise<void> => {
     setIsLoading(true)
 
     assert(user, 'User must be logged in to add news to read later list')
-    let body
 
-    if (readLaterData) {
-      const readLaterParsed = JSON.parse(readLaterData) as NewsCard[]
-      readLaterParsed.push(newsCard)
+    const body = addNewsToReadList(newsCard, user, readLaterData)
 
-      body = { newsList: readLaterParsed, email: user }
-    } else {
-      body = { newsList: [newsCard], email: user }
-    }
+    await executeReadLaterMutation('add', body, {
+      setToastProps,
+      updateReadLaterData,
+    })
 
-    const res = await client['add-read-later'].$post({ json: body })
-
-    const msg = (await res.json()) as { error: string } | { success: string }
-
-    if ('error' in msg) {
-      setToastProps({
-        message: msg.error,
-        type: 'error',
-      })
-    } else {
-      setToastProps({
-        message: msg.success,
-        type: 'success',
-      })
-
-      updateReadLaterData(JSON.stringify(body.newsList))
-    }
     toggleToast()
     setIsLoading(false)
   }
@@ -102,38 +82,14 @@ function NewsCard({
       'Read later data must be present to remove news from list',
     )
 
-    const readLaterParsed = JSON.parse(readLaterData) as NewsCard[]
-    const filteredReadLaterParse = readLaterParsed.filter(
-      (news) => news.id !== newsCard.id,
-    )
+    const newsCardId = newsCard.id
+    const body = removeNewsFromReadList(newsCardId, user, readLaterData)
 
-    const newsList =
-      isArray(filteredReadLaterParse) && filteredReadLaterParse.length > 0
-        ? filteredReadLaterParse
-        : null
+    await executeReadLaterMutation('remove', body, {
+      setToastProps,
+      updateReadLaterData,
+    })
 
-    const body = {
-      newsList,
-      email: user,
-    }
-
-    const res = await client['add-read-later'].$post({ json: body })
-
-    const msg = (await res.json()) as { error: string } | { success: string }
-
-    if ('error' in msg) {
-      setToastProps({
-        message: 'Error removing news from Read later list',
-        type: 'error',
-      })
-    } else {
-      setToastProps({
-        message: 'News successfully removed from Read later list',
-        type: 'success',
-      })
-
-      updateReadLaterData(JSON.stringify(body.newsList))
-    }
     toggleToast()
     setIsLoading(false)
   }

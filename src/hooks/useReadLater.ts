@@ -3,7 +3,6 @@ export { useReadLater }
 import { useState } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
 
-/** @todo This will probably become useFeed() in the future */
 function useReadLater(): {
   readLaterData: string | null
   updateReadLaterData: (data: string | null) => Promise<void>
@@ -16,7 +15,7 @@ function useReadLater(): {
     initialReadLaterData,
   )
 
-  async function updateReadLaterData(data: string | null): Promise<void> {
+  const updateReadLaterData = async (data: string | null): Promise<void> => {
     setReadLaterData(data)
   }
 
