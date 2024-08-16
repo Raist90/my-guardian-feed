@@ -11,6 +11,7 @@ import clsx from 'clsx'
 import React, { useState } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
 import { Button } from './Button'
+import { Searchbar } from './Searchbar'
 import { Toast } from './Toast'
 
 function SectionList() {
@@ -97,7 +98,9 @@ function SectionList() {
   const areFiltersEnabled = selectedSections.length > 0
 
   return (
-    <div className='mb-8 flex flex-wrap justify-between gap-4 text-xs'>
+    <div className='mb-8 grid gap-4 text-xs'>
+      <Searchbar />
+
       <div className='flex flex-wrap gap-2'>
         {sections.map((section) => {
           const isActive = selectedSections.includes(section)
